@@ -17,12 +17,6 @@
     "type-check": "tsc",
     "lint": "eslint --ignore-path .gitignore \"src/**/*.+(ts|js|tsx)\"",
     "format": "prettier --ignore-path .gitignore \"src/**/*.+(ts|js|tsx)\" --write",
-    "postinstall": "husky install"
-  },
-  "huskey": {
-    "hooks": {
-      "pre-commit": "yarn format"
-    }
   },
   "lint-staged": {
     "./src/**/*.{ts,js,jsx,tsx}": [
