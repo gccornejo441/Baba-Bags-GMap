@@ -3,3 +3,5 @@
 . "$(dirname "$0")/common.sh"
 
 pnpm lint-staged
+npm test
+npm test

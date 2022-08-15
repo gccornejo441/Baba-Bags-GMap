@@ -1,13 +1,13 @@
 {
-  "name": "typescript-nextjs-starter",
-  "description": "A TypeScript starter for Next.js that includes all you need to build amazing projects",
+  "name": "baba-bags-gmap",
+  "description": "A Baba Bags Project",
   "version": "1.0.0",
   "private": true,
-  "author": "João Pedro Schmitz <hey@joaopedro.dev> (@jpedroschmitz)",
+  "author": "Gabriel Cornejo",
   "license": "MIT",
   "keywords": [
     "nextjs",
-    "starter",
+    "google api",
     "typescript"
   ],
   "scripts": {
@@ -19,6 +19,11 @@
     "format": "prettier --ignore-path .gitignore \"src/**/*.+(ts|js|tsx)\" --write",
     "postinstall": "husky install"
   },
+  "huskey": {
+    "hooks": {
+      "pre-commit": "yarn format"
+    }
+  },
   "lint-staged": {
     "./src/**/*.{ts,js,jsx,tsx}": [
       "eslint --ignore-path .gitignore --fix",
@@ -26,7 +31,10 @@
     ]
   },
   "dependencies": {
+    "@firebase/firestore": "3.4.14",
     "firebase": "9.9.2",
+    "firebase-admin": "11.0.1",
+    "firebase-tools": "11.6.0",
     "next": "12.2.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",

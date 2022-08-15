@@ -5,32 +5,65 @@ import styles from '@/styles/Home.module.css';
 import { useState } from 'react';
 
 import { useForm, SubmitHandler } from "react-hook-form";
+import { app, database } from '../../firebaseConfig.js';
+import { collection, addDoc, getDocs } from 'firebase/firestore';
+
+import { initializeApp, applicationDefault, cert } from 'firebase-admin/app';
+import { getFirestore, Timestamp, FieldValue } from 'firebase-admin/firestore';
+
 
 type Inputs = {
-  example: string,
-  exampleRequired: string,
+  _id: string,
+  location: string,
+  message: string
 };
+
+const dbInstance = collection(database, 'baba_gift_bags');
+
+const insert = async ({...data}: Inputs) => {
+  addDoc(dbInstance, data)
+}
+
+const getDoc = async () => {
+  getDocs(dbInstance).then((data) => {
+    
+  })
+}
+
+
+
 
 
 export default function Home() {
-
   const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = data => console.log(data);
+  const onSubmit: SubmitHandler<Inputs> = data => {
+    insert(data);
+  };
 
-  console.log(watch("example")) // watch input value by passing the name of it
 
   return (
     <div>
       <div className="py-12 bg-white text-black">
-
         <div className="mt-5 md:mt-0 md:col-span-2 mx-auto border-2 border-red-500 w-1/2 flex justify-center">
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="shadow overflow-hidden sm:rounded-md">
               <div className="px-4 py-5 bg-white sm:p-6">
                 <div className="grid grid-cols-6 gap-6">
                   <div className="col-span-6 sm:col-span-3">
-                    <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">First name</label>
-                    <input defaultValue="test" {...register("example")} type="text" name="first-name" id="first-name" autocomplete="given-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                    <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">Username</label>
+                    <input defaultValue="test" {...register("_id")} type="text" name="_id" id="_id" autoComplete="given-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-6 gap-6">
+                  <div className="col-span-6 sm:col-span-3">
+                    <label htmlFor="location" className="block text-sm font-medium text-gray-700">City</label>
+                    <input defaultValue="test" {...register("location")} type="text" name="location" id="location" autoComplete="given-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-6 gap-6">
+                  <div className="col-span-6 sm:col-span-3">
+                    <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">Note</label>
+                    <input defaultValue="test" {...register("message")} type="text" name="message" id="message" autoComplete="given-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                   </div>
                 </div>
               </div>
