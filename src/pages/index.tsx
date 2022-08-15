@@ -10,6 +10,14 @@ import { collection, addDoc, getDocs } from 'firebase/firestore';
 
 import { initializeApp, applicationDefault, cert } from 'firebase-admin/app';
 import { getFirestore, Timestamp, FieldValue } from 'firebase-admin/firestore';
+import GMap from '../../components/GMap'
+import Geocode from "react-geocode";
+import * as React from 'react';
+
+// set Google Maps Geocoding API for purposes of quota management. Its optional but recommended.
+Geocode.setApiKey("AIzaSyC3VCDaWLypkC2vOX_P4J4v-IvhuxadC2k");
+
+
 
 
 type Inputs = {
@@ -26,21 +34,76 @@ const insert = async ({...data}: Inputs) => {
 
 const getDoc = async () => {
   getDocs(dbInstance).then((data) => {
-    
+    console.log(data.docs.map((item) => {
+      return { ...item.data(), id: item.id }
+    }));
   })
 }
 
 
-
-
-
 export default function Home() {
+  const [street, setStreet] = React.useState("");
+  const [city, setCity] = React.useState("");
+  const [state, setState] = React.useState("");
+
+  const geoAddress = `${street} + ", " + ${city} + " " ${state}`
+  console.log("GEO-ADDRESS: ", geoAddress);
+
   const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = data => {
     insert(data);
   };
 
+  // Get latitude & longitude from address.
+  Geocode.fromAddress(geoAddress).then(
+    (response: any) => {
+      const { lat, lng } = response.results[0].geometry.location;
+      console.log(lat, lng);
+    },
+    (error: Error) => {
+      console.error(error);
+    }
+  );
 
+  const form = (
+    <div
+      style={{
+        padding: "1rem",
+        flexBasis: "250px",
+        height: "100%",
+        overflow: "auto",
+      }}
+    >
+      <label htmlFor="city">City</label>
+      <input
+        type="string"
+        id="city"
+        name="city"
+        value={city}
+        onChange={(event) => setCity(String(event.target.value))}
+      />
+      <br />
+      <label htmlFor="street">Street</label>
+      <input
+        type="text"
+        id="street"
+        name="street"
+        value={street}
+        onChange={(event) => setStreet(String(event.target.value))}
+      />
+      <br />
+      <label htmlFor="street">State</label>
+      <input
+        type="text"
+        id="state"
+        name="state"
+        value={state}
+        onChange={(event) => setState(String(event.target.value))}
+      />
+      <br />
+    </div>
+  );
+  
   return (
     <div>
       <div className="py-12 bg-white text-black">
@@ -69,9 +132,16 @@ export default function Home() {
               </div>
               <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
                 <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Save</button>
+                <button onClick={getDoc} className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Report</button>
               </div>
             </div>
           </form>
+        </div>
+
+        {form}
+
+        <div>
+          <GMap/>
         </div>
       </div>
     </div>

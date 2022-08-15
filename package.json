@@ -16,7 +16,7 @@
     "start": "next start",
     "type-check": "tsc",
     "lint": "eslint --ignore-path .gitignore \"src/**/*.+(ts|js|tsx)\"",
-    "format": "prettier --ignore-path .gitignore \"src/**/*.+(ts|js|tsx)\" --write",
+    "format": "prettier --ignore-path .gitignore \"src/**/*.+(ts|js|tsx)\" --write"
   },
   "lint-staged": {
     "./src/**/*.{ts,js,jsx,tsx}": [
@@ -26,12 +26,16 @@
   },
   "dependencies": {
     "@firebase/firestore": "3.4.14",
+    "@googlemaps/react-wrapper": "1.1.35",
+    "@googlemaps/typescript-guards": "2.0.1",
+    "fast-equals": "4.0.1",
     "firebase": "9.9.2",
     "firebase-admin": "11.0.1",
     "firebase-tools": "11.6.0",
     "next": "12.2.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-geocode": "0.2.3",
     "react-hook-form": "7.34.1"
   },
   "devDependencies": {
