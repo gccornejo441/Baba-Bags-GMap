@@ -5,16 +5,29 @@ import * as React from 'react';
 import Geocode from "react-geocode";
 
 // We will use these things from the lib
-import {
-    useLoadScript,
-    GoogleMap,
-    Marker,
-    InfoWindow,
-    Polyline,
-} from "@react-google-maps/api";
+import { GoogleMap, useLoadScript } from '@react-google-maps/api';
+
+
+
+const containerStyle = {
+    width: '400px',
+    height: '400px'
+};
+
+const center = {
+    lat: -3.745,
+    lng: -38.523
+};
 
 const GMap = ({ ...props }) => {
+    const { isLoaded } = useLoadScript({
+        id: 'google-map-script',
+        googleMapsApiKey: "AIzaSyC3VCDaWLypkC2vOX_P4J4v-IvhuxadC2k"
+    })
+
     const [mapRef, setMapRef] = React.useState(null);
+    const [map, setMap] = React.useState(null)
+
     const [selectedPlace, setSelectedPlace] = React.useState(null);
     const [zip, setZip] = React.useState("")
     const [zoom, setZoom] = React.useState(5)
@@ -25,10 +38,6 @@ const GMap = ({ ...props }) => {
         lat: 0,
         lng: 0,
     });
-
-    const { isLoaded } = useLoadScript({
-        googleMapsApiKey: "AIzaSyC3VCDaWLypkC2vOX_P4J4v-IvhuxadC2k"
-    })
 
     // Get latitude & longitude from address.
     Geocode.fromAddress(props.geoAddress).then(
@@ -48,64 +57,28 @@ const GMap = ({ ...props }) => {
         { id: "place3", pos: { lat: 39.07602397235644, lng: -94.5184089401211 } }
     ];
 
-    // Iterate myPlaces to size, center, and zoom map to contain all markers
-    const fitBounds = map => {
-        const bounds = new window.google.maps.LatLngBounds();
-        myPlaces.map(place => {
-            bounds.extend(place.pos);
-            return place.id;
-        });
+    const onLoad = React.useCallback(function callback(map) {
+        const bounds = new window.google.maps.LatLngBounds(center);
         map.fitBounds(bounds);
-    };
+        setMap(map)
+    }, [])
 
-    const loadHandler = map => {
-        // Store a reference to the google map instance in state
-        setMapRef(map);
-        // Fit map bounds to contain all markers
-        fitBounds(map);
-    };
+    const onUnmount = React.useCallback(function callback(map) {
+        setMap(null)
+    }, [])
 
-    // We have to create a mapping of our places to actual Marker objects
-    const markerLoadHandler = (marker, place) => {
-        return setMarkerMap(prevState => {
-            return { ...prevState, [place.id]: marker };
-        });
-    };
-
-    const markerClickHandler = (event, place) => {
-        // Remember which place was clicked
-        setSelectedPlace(place);
-
-        // Required so clicking a 2nd marker works as expected
-        if (infoOpen) {
-            setInfoOpen(false);
-        }
-
-        setInfoOpen(true);
-        // If you want to zoom in a little on marker click
-        if (zoom < 13) {
-            setZoom(13);
-        }
-
-        // if you want to center the selected Marker
-        // setCenter(place.pos)
-    };
-
-    return (
-        <div className="h-[100vh]">
-            <GoogleMap
-                onLoad={loadHandler}
-                center={center}
-                zoom={zoom}
-                mapContainerStyle={{
-                    height: "70vh",
-                    width: "100%"
-                }}
-            >
-                
-            </GoogleMap>
-        </div>
-    );
+    return isLoaded ? (
+        <GoogleMap
+            mapContainerStyle={containerStyle}
+            center={center}
+            zoom={10}
+            onLoad={onLoad}
+            onUnmount={onUnmount}
+        >
+            { /* Child components, such as markers, info windows, etc. */}
+            <></>
+        </GoogleMap>
+    ) : <></>
 }
 
 
