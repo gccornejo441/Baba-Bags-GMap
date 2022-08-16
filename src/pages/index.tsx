@@ -55,15 +55,15 @@ export default function Home() {
   };
 
   // Get latitude & longitude from address.
-  Geocode.fromAddress(geoAddress).then(
-    (response: any) => {
-      const { lat, lng } = response.results[0].geometry.location;
-      console.log(lat, lng);
-    },
-    (error: Error) => {
-      console.error(error);
-    }
-  );
+  // Geocode.fromAddress(geoAddress).then(
+  //   (response: any) => {
+  //     const { lat, lng } = response.results[0].geometry.location;
+  //     console.log(lat, lng);
+  //   },
+  //   (error: Error) => {
+  //     console.error(error);
+  //   }
+  // );
 
   const form = (
     <div
@@ -141,7 +141,9 @@ export default function Home() {
         {form}
 
         <div>
-          <GMap/>
+          <GMap
+            geoAddress={geoAddress}
+          />
         </div>
       </div>
     </div>
