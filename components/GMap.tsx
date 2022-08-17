@@ -14,10 +14,10 @@ const containerStyle = {
     height: '400px'
 };
 
-const center = {
-    lat: -3.745,
-    lng: -38.523
-};
+interface IOption {
+    options: any[]
+}
+
 
 const GMap = ({ ...props }) => {
     const { isLoaded } = useLoadScript({
@@ -27,7 +27,7 @@ const GMap = ({ ...props }) => {
 
     const [mapRef, setMapRef] = React.useState(null);
     const [map, setMap] = React.useState(null)
-
+    
     const [selectedPlace, setSelectedPlace] = React.useState(null);
     const [zip, setZip] = React.useState("")
     const [zoom, setZoom] = React.useState(5)
@@ -35,9 +35,10 @@ const GMap = ({ ...props }) => {
     const [clickedLatLng, setClickedLatLng] = React.useState(null);
     const [markerMap, setMarkerMap] = React.useState({});
     const [center, setCenter] = React.useState<google.maps.LatLngLiteral>({
-        lat: 0,
-        lng: 0,
+        lat: 33.87545706670063,
+        lng: -117.56669469076199,
     });
+
 
     // Get latitude & longitude from address.
     Geocode.fromAddress(props.geoAddress).then(
@@ -57,23 +58,22 @@ const GMap = ({ ...props }) => {
         { id: "place3", pos: { lat: 39.07602397235644, lng: -94.5184089401211 } }
     ];
 
-    const onLoad = React.useCallback(function callback(map) {
-        const bounds = new window.google.maps.LatLngBounds(center);
-        map.fitBounds(bounds);
-        setMap(map)
-    }, [])
 
-    const onUnmount = React.useCallback(function callback(map) {
-        setMap(null)
-    }, [])
-
+    const options = {
+        zoomControlOptions: {
+            position: google.maps.ControlPosition.RIGHT_CENTER // ,
+            // ...otherOptions
+        }
+    }
+    
     return isLoaded ? (
         <GoogleMap
             mapContainerStyle={containerStyle}
             center={center}
-            zoom={10}
-            onLoad={onLoad}
-            onUnmount={onUnmount}
+            zoom={12}
+            options={
+                options
+            }
         >
             { /* Child components, such as markers, info windows, etc. */}
             <></>
