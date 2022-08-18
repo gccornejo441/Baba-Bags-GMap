@@ -58,22 +58,12 @@ const GMap = ({ ...props }) => {
         { id: "place3", pos: { lat: 39.07602397235644, lng: -94.5184089401211 } }
     ];
 
-
-    const options = {
-        zoomControlOptions: {
-            position: google.maps.ControlPosition.RIGHT_CENTER // ,
-            // ...otherOptions
-        }
-    }
     
     return isLoaded ? (
         <GoogleMap
             mapContainerStyle={containerStyle}
             center={center}
             zoom={12}
-            options={
-                options
-            }
         >
             { /* Child components, such as markers, info windows, etc. */}
             <></>

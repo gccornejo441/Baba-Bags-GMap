@@ -18,13 +18,13 @@ import * as React from 'react';
 Geocode.setApiKey("AIzaSyC3VCDaWLypkC2vOX_P4J4v-IvhuxadC2k");
 
 
-
-
 type Inputs = {
   _id: string,
   location: string,
-  message: string
+  message: string,
+  address: string,
 };
+
 
 const dbInstance = collection(database, 'baba_gift_bags');
 
@@ -32,22 +32,24 @@ const insert = async ({...data}: Inputs) => {
   addDoc(dbInstance, data)
 }
 
-const getDoc = async () => {
-  getDocs(dbInstance).then((data) => {
-    console.log(data.docs.map((item) => {
-      return { ...item.data(), id: item.id }
-    }));
-  })
-}
 
 
 export default function Home() {
   const [street, setStreet] = React.useState("");
   const [city, setCity] = React.useState("");
   const [state, setState] = React.useState("");
+  
+  // const getDoc = async () => {
+  //   getDocs(dbInstance).then((data) => {
+  //       data.docs.map((item) => {
+  //         console.log(item)
+  //     })
+  //     const geoAddress = `${street} + ", " + ${city} + " " ${state}`
+  //   })
+  // }
 
-  const geoAddress = `${street} + ", " + ${city} + " " ${state}`
-  console.log("GEO-ADDRESS: ", geoAddress);
+
+
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = data => {
@@ -64,45 +66,6 @@ export default function Home() {
   //     console.error(error);
   //   }
   // );
-
-  const form = (
-    <div
-      style={{
-        padding: "1rem",
-        flexBasis: "250px",
-        height: "100%",
-        overflow: "auto",
-      }}
-    >
-      <label htmlFor="city">City</label>
-      <input
-        type="string"
-        id="city"
-        name="city"
-        value={city}
-        onChange={(event) => setCity(String(event.target.value))}
-      />
-      <br />
-      <label htmlFor="street">Street</label>
-      <input
-        type="text"
-        id="street"
-        name="street"
-        value={street}
-        onChange={(event) => setStreet(String(event.target.value))}
-      />
-      <br />
-      <label htmlFor="street">State</label>
-      <input
-        type="text"
-        id="state"
-        name="state"
-        value={state}
-        onChange={(event) => setState(String(event.target.value))}
-      />
-      <br />
-    </div>
-  );
   
   return (
     <div>
@@ -129,24 +92,40 @@ export default function Home() {
                     <input defaultValue="test" {...register("message")} type="text" name="message" id="message" autoComplete="given-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                   </div>
                 </div>
+                <div className="grid grid-cols-6 gap-6">
+                  <div className="col-span-6 sm:col-span-3">
+                    <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">Address</label>
+                    <input defaultValue="" {...register("address")} type="text" name="address" id="address" autoComplete="given-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                  </div>
+                </div>
               </div>
               <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
                 <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Save</button>
-                <button onClick={getDoc} className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Report</button>
+                <button onClick={getDocData} className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Report</button>
               </div>
             </div>
           </form>
         </div>
 
-        {form}
-
         <div>
           <GMap
-            geoAddress={geoAddress}
+            
           />
         </div>
       </div>
     </div>
 
   );
+}
+
+
+
+// This gets called on every request
+export async function getServerSideProps() {
+  // Fetch data from external API
+  const res =  await database.collection('baba_gift_bags').get()
+
+
+  // Pass data to the page via props
+  return { props: {  } }
 }
