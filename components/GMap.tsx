@@ -5,8 +5,13 @@ import * as React from 'react';
 import Geocode from "react-geocode";
 
 // We will use these things from the lib
-import { GoogleMap, useLoadScript } from '@react-google-maps/api';
-
+import {
+    GoogleMap,
+    Marker,
+    InfoWindow,
+    Polyline,
+    useLoadScript
+} from "@react-google-maps/api";
 
 
 const containerStyle = {
@@ -14,59 +19,61 @@ const containerStyle = {
     height: '400px'
 };
 
-interface IOption {
-    options: any[]
-}
-
-
+const center = {
+    lat: 37.772, lng: -122.214
+};
 const GMap = ({ ...props }) => {
     const { isLoaded } = useLoadScript({
         id: 'google-map-script',
         googleMapsApiKey: "AIzaSyC3VCDaWLypkC2vOX_P4J4v-IvhuxadC2k"
     })
 
-    const [mapRef, setMapRef] = React.useState(null);
     const [map, setMap] = React.useState(null)
-    
-    const [selectedPlace, setSelectedPlace] = React.useState(null);
-    const [zip, setZip] = React.useState("")
-    const [zoom, setZoom] = React.useState(5)
-    const [infoOpen, setInfoOpen] = React.useState(false); 
-    const [clickedLatLng, setClickedLatLng] = React.useState(null);
-    const [markerMap, setMarkerMap] = React.useState({});
-    const [center, setCenter] = React.useState<google.maps.LatLngLiteral>({
-        lat: 33.87545706670063,
-        lng: -117.56669469076199,
-    });
 
+    const onLoad = React.useCallback(function callback(map) {
+        const bounds = new window.google.maps.LatLngBounds(center);
+        map.fitBounds(bounds);
+        setMap(map)
+    }, [])
 
-    // Get latitude & longitude from address.
-    Geocode.fromAddress(props.geoAddress).then(
-        (response: any) => {
-            const { lat, lng } = response.results[0].geometry.location;
-        },
-        (error: Error) => {
-            console.error(error);
-        }
-    );
- 
-    // The places I want to create markers for.
-    // This could be a data-driven prop.
-    const myPlaces = [
-        { id: "place1", pos: { lat: 39.09366509575983, lng: -94.58751660204751 } },
-        { id: "place2", pos: { lat: 39.10894664788252, lng: -94.57926449532226 } },
-        { id: "place3", pos: { lat: 39.07602397235644, lng: -94.5184089401211 } }
-    ];
+    const onUnmount = React.useCallback(function callback(map) {
+        setMap(null)
+    }, [])
 
-    
+    const options = {
+        strokeColor: '#FF0000',
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: '#FF0000',
+        fillOpacity: 0.35,
+        clickable: false,
+        draggable: false,
+        editable: false,
+        visible: true,
+        radius: 30000,
+        paths: [
+            { lat: 37.772, lng: -122.214 },
+            { lat: 21.291, lng: -157.821 },
+            { lat: -18.142, lng: 178.431 },
+            { lat: -27.467, lng: 153.027 }
+        ],
+        zIndex: 1
+    };
+
     return isLoaded ? (
         <GoogleMap
             mapContainerStyle={containerStyle}
             center={center}
-            zoom={12}
+            zoom={10}
+            onLoad={onLoad}
+            onUnmount={onUnmount}
         >
             { /* Child components, such as markers, info windows, etc. */}
-            <></>
+            <>
+            <Polyline
+                    option={options}
+            />
+            </>
         </GoogleMap>
     ) : <></>
 }

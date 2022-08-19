@@ -5,11 +5,9 @@ import styles from '@/styles/Home.module.css';
 import { useState } from 'react';
 
 import { useForm, SubmitHandler } from "react-hook-form";
-import { app, database } from '../../firebaseConfig.js';
 import { collection, addDoc, getDocs } from 'firebase/firestore';
+import { database } from '../../firebaseConfig.js';
 
-import { initializeApp, applicationDefault, cert } from 'firebase-admin/app';
-import { getFirestore, Timestamp, FieldValue } from 'firebase-admin/firestore';
 import GMap from '../../components/GMap'
 import Geocode from "react-geocode";
 import * as React from 'react';
@@ -25,7 +23,6 @@ type Inputs = {
   address: string,
 };
 
-
 const dbInstance = collection(database, 'baba_gift_bags');
 
 const insert = async ({...data}: Inputs) => {
@@ -38,17 +35,15 @@ export default function Home() {
   const [street, setStreet] = React.useState("");
   const [city, setCity] = React.useState("");
   const [state, setState] = React.useState("");
+  const [geoAddress, setGeoAdress] = React.useState("");
   
-  // const getDoc = async () => {
-  //   getDocs(dbInstance).then((data) => {
-  //       data.docs.map((item) => {
-  //         console.log(item)
-  //     })
-  //     const geoAddress = `${street} + ", " + ${city} + " " ${state}`
-  //   })
-  // }
-
-
+  const getDoc = async () => {
+    getDocs(dbInstance).then((data) => {
+        data.docs.map((item) => {
+          setGeoAdress({...item.data()}.address)
+      })
+    })
+  }
 
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
@@ -101,7 +96,7 @@ export default function Home() {
               </div>
               <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
                 <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Save</button>
-                <button onClick={getDocData} className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Report</button>
+                <button onClick={getDoc} className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Report</button>
               </div>
             </div>
           </form>
@@ -109,7 +104,7 @@ export default function Home() {
 
         <div>
           <GMap
-            
+            geoAddress={geoAddress}
           />
         </div>
       </div>
@@ -118,14 +113,3 @@ export default function Home() {
   );
 }
 
-
-
-// This gets called on every request
-export async function getServerSideProps() {
-  // Fetch data from external API
-  const res =  await database.collection('baba_gift_bags').get()
-
-
-  // Pass data to the page via props
-  return { props: {  } }
-}
