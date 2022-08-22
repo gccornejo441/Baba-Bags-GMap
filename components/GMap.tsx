@@ -7,10 +7,11 @@ import Geocode from "react-geocode";
 // We will use these things from the lib
 import {
     GoogleMap,
-    Marker,
+    MarkerF,
     InfoWindow,
     Polyline,
-    useLoadScript
+    useLoadScript,
+    PolylineF
 } from "@react-google-maps/api";
 
 
@@ -40,6 +41,7 @@ const GMap = ({ ...props }) => {
         setMap(null)
     }, [])
 
+
     const options = {
         strokeColor: '#FF0000',
         strokeOpacity: 0.8,
@@ -60,19 +62,29 @@ const GMap = ({ ...props }) => {
         zIndex: 1
     };
 
+    const flightPlanCoordinates = [
+        { lat: 37.772, lng: -122.214 },
+        { lat: 21.291, lng: -157.821 },
+        { lat: -18.142, lng: 178.431 },
+        { lat: -27.467, lng: 153.027 },
+    ];
+
     return isLoaded ? (
         <GoogleMap
             mapContainerStyle={containerStyle}
             center={center}
-            zoom={10}
+            zoom={5}
             onLoad={onLoad}
             onUnmount={onUnmount}
         >
             { /* Child components, such as markers, info windows, etc. */}
             <>
-            <Polyline
-                    option={options}
-            />
+                <MarkerF  position={center} />
+                <PolylineF
+                path={flightPlanCoordinates}
+                options={options}
+                />
+                
             </>
         </GoogleMap>
     ) : <></>
