@@ -11,6 +11,7 @@ import { database } from '../../firebaseConfig.js';
 import GMap from '../../components/GMap'
 import Geocode from "react-geocode";
 import * as React from 'react';
+import { prependOnceListener } from 'process';
 
 // set Google Maps Geocoding API for purposes of quota management. Its optional but recommended.
 Geocode.setApiKey("AIzaSyC3VCDaWLypkC2vOX_P4J4v-IvhuxadC2k");
@@ -112,4 +113,3 @@ export default function Home() {
 
   );
 }
-

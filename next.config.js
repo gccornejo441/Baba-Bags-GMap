@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   env: {
-    GOOGLEAPI: process.env.API_GOOGLE_KEY,
+    GOOGLEAPI: process.env.NEXT_PUBLIC_API_GOOGLE_KEY,
   },
 };
 

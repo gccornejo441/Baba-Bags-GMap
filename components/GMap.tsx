@@ -15,6 +15,8 @@ import {
 } from "@react-google-maps/api";
 
 
+const googM = `${process.env.GOOGLEAPI}`
+
 const containerStyle = {
     width: '400px',
     height: '400px'
@@ -23,10 +25,24 @@ const containerStyle = {
 const center = {
     lat: 37.772, lng: -122.214
 };
+
+Geocode.setApiKey(googM);
+// Get address from latitude & longitude.
+Geocode.fromLatLng({...center}).then(
+    (response) => {
+        const address = response.results[0].formatted_address;
+        console.log(address);
+    },
+    (error) => {
+        console.error(error);
+    }
+)
+
 const GMap = ({ ...props }) => {
+    
     const { isLoaded } = useLoadScript({
         id: 'google-map-script',
-        googleMapsApiKey: "AIzaSyC3VCDaWLypkC2vOX_P4J4v-IvhuxadC2k"
+        googleMapsApiKey: googM!
     })
 
     const [map, setMap] = React.useState(null)
