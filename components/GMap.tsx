@@ -18,27 +18,49 @@ import {
 const googM = `${process.env.GOOGLEAPI}`
 
 const containerStyle = {
-    width: '400px',
-    height: '400px'
+    height: "70vh",
+    width: "100%"
 };
 
-const center = {
-    lat: 37.772, lng: -122.214
-};
 
-Geocode.setApiKey(googM);
+Geocode.setApiKey(process.env.GOOGLEAPI);
 // Get address from latitude & longitude.
-Geocode.fromLatLng({...center}).then(
-    (response) => {
-        const address = response.results[0].formatted_address;
-        console.log(address);
-    },
-    (error) => {
-        console.error(error);
-    }
-)
 
 const GMap = ({ ...props }) => {
+    const [center, setCenter] = React.useState({ lat: 44.076613, lng: -98.362239833 });
+    const [zoom, setZoom] = React.useState(5);
+
+    React.useEffect(() => {
+        console.log("PROPS, ", props);
+
+    }, [])
+
+
+    if (props.geoAddress == "") {
+        // Get latitude & longitude from address.
+        Geocode.fromAddress({ lat: 39.09366509575983, lng: -94.58751660204751 }).then(
+            (response) => {
+                const { lat, lng } = response.results[0].geometry.location;
+                console.log(lat, lng);
+                setCenter({lat, lng})
+            },
+            (error) => {
+                console.error(error);
+            }
+        );
+    } else {
+        // Get latitude & longitude from address.
+        Geocode.fromAddress(props.geoAddress).then(
+            (response) => {
+                const { lat, lng } = response.results[0].geometry.location;
+                console.log(lat, lng);
+                setCenter({ lat, lng })
+            },
+            (error) => {
+                console.error(error);
+            }
+        );
+    }
     
     const { isLoaded } = useLoadScript({
         id: 'google-map-script',
@@ -69,20 +91,13 @@ const GMap = ({ ...props }) => {
         editable: false,
         visible: true,
         radius: 30000,
-        paths: [
-            { lat: 37.772, lng: -122.214 },
-            { lat: 21.291, lng: -157.821 },
-            { lat: -18.142, lng: 178.431 },
-            { lat: -27.467, lng: 153.027 }
-        ],
+        paths: [{center}],
         zIndex: 1
     };
 
     const flightPlanCoordinates = [
-        { lat: 37.772, lng: -122.214 },
-        { lat: 21.291, lng: -157.821 },
-        { lat: -18.142, lng: 178.431 },
-        { lat: -27.467, lng: 153.027 },
+        { lat: 39.09366509575983, lng: -94.58751660204751 }, 
+        {...center}
     ];
 
     return isLoaded ? (
@@ -95,7 +110,7 @@ const GMap = ({ ...props }) => {
         >
             { /* Child components, such as markers, info windows, etc. */}
             <>
-                <MarkerF  position={center} />
+                {/* <MarkerF  position={center} /> */}
                 <PolylineF
                 path={flightPlanCoordinates}
                 options={options}
