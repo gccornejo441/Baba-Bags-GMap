@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { useForm, SubmitHandler } from "react-hook-form";
 import { collection, addDoc, getDocs } from 'firebase/firestore';
 import { database } from '../../firebaseConfig.js';
-
+import Geocode from "react-geocode";
 import GMap from '../../components/GMap'
 import * as React from 'react';
 
@@ -15,42 +15,59 @@ type Inputs = {
   username: string,
   city: string,
   message: string,
-  address: string,
 };
 
+interface ILocation {
+  _id: string,
+  pos: {
+    lat: string,
+    lng: string
+  }
+}[]
+
 const dbInstance = collection(database, 'baba_gift_bags');
+Geocode.setApiKey(process.env.GOOGLEAPI);
+// Get address from latitude & longitude.
 
 export default function Home() {
-  const [geoAddress, setGeoAdress] = React.useState("");
+  const [geoAddress, setGeoAdress] = React.useState({ lat: null, lng: null });
   const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
   
+  const [locationData, setLocationData] = React.useState<ILocation>()
+
   const getDoc = async () => {
-      getDocs(dbInstance).then((data) => {
-        data.docs.map((item) => {
-          setGeoAdress({ ...item.data() }.city)
-        })
+    getDocs(dbInstance).then((data) => {
+      data.docs.map((item) => {
+        setLocationData({...item.data()}._id)
       })
+    })
   }
-  
-  
-  const insert = async ({...data}: Inputs) => {
-    addDoc(dbInstance, data)
+
+  console.log("locationData: ", locationData);
+
+  const insert = async ({ ...data }: Inputs) => {
+    // Get latitude & longitude from address.
+    Geocode.fromAddress(data.city).then(
+      (response) => {
+        const { lat, lng } = response.results[0].geometry.location;
+        console.log(lat, lng);
+        setGeoAdress({ lat, lng })
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+    addDoc(dbInstance, {
+      _id: data.username,
+      pos: geoAddress
+    })
   }
+
   const onSubmit: SubmitHandler<Inputs> = data => {
-      insert(data);
+    insert(data);
   };
 
-  // Get latitude & longitude from address.
-  // Geocode.fromAddress(geoAddress).then(
-  //   (response: any) => {
-  //     const { lat, lng } = response.results[0].geometry.location;
-  //     console.log(lat, lng);
-  //   },
-  //   (error: Error) => {
-  //     console.error(error);
-  //   }
-  // );
-  
+
   return (
     <div>
       <div className="py-12 bg-white text-black">
@@ -87,7 +104,6 @@ export default function Home() {
 
         <div>
           <GMap
-            geoAddress={geoAddress}
           />
         </div>
       </div>
