@@ -7,13 +7,13 @@ import { getFirestore } from 'firebase/firestore';
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: `${process.env.GOOGLEAPI}`,
-  authDomain: "baba-bags-maps.firebaseapp.com",
-  projectId: "baba-bags-maps",
-  storageBucket: "baba-bags-maps.appspot.com",
-  messagingSenderId: "81620081192",
-  appId: "1:81620081192:web:4f17c4877038489d58b31d",
-  measurementId: "G-NVX946D2PZ"
+  apiKey: process.env.FIREBASEAPI,
+  authDomain: "baba-bags-giftbags.firebaseapp.com",
+  projectId: "baba-bags-giftbags",
+  storageBucket: "baba-bags-giftbags.appspot.com",
+  messagingSenderId: "178062327900",
+  appId: "1:178062327900:web:a608c82dabbbbe63a9e699",
+  measurementId: "G-1ZSEMXM3XY"
 };
 
 // Initialize Firebase

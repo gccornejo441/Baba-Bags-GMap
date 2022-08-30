@@ -4,6 +4,7 @@ const nextConfig = {
   swcMinify: true,
   env: {
     GOOGLEAPI: process.env.NEXT_PUBLIC_API_GOOGLE_KEY,
+    FIREBASEAPI: process.env.NEXT_PUBLIC_FIREBASE_KEY,
   },
 };
 

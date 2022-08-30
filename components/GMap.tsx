@@ -15,7 +15,7 @@ import {
 } from "@react-google-maps/api";
 
 
-const googM = `${process.env.GOOGLEAPI}`
+const googM = process.env.GOOGLEAPI!;
 
 const containerStyle = {
     height: "70vh",
@@ -26,17 +26,16 @@ const containerStyle = {
 const GMap = ({ ...props }) => {
     const [center, setCenter] = React.useState({ lat: 44.076613, lng: -98.362239833 });
     const [zoom, setZoom] = React.useState(5);
-    
+
     const { isLoaded } = useLoadScript({
         id: 'google-map-script',
-        googleMapsApiKey: googM!
+        googleMapsApiKey: googM
     })
 
     const [map, setMap] = React.useState(null)
 
     const onLoad = React.useCallback(function callback(map) {
-        const bounds = new window.google.maps.LatLngBounds(center);
-        map.fitBounds(bounds);
+        map.setZoom(zoom)
         setMap(map)
     }, [])
 
@@ -56,32 +55,32 @@ const GMap = ({ ...props }) => {
         editable: false,
         visible: true,
         radius: 30000,
-        paths: [{center}],
+        paths: [{ center }],
         zIndex: 1
     };
 
     const flightPlanCoordinates = [
-        { lat: 39.09366509575983, lng: -94.58751660204751 }, 
-        {...center}
+        { lat: 39.09366509575983, lng: -94.58751660204751 },
+        { ...center }
     ];
 
     return isLoaded ? (
         <GoogleMap
             mapContainerStyle={containerStyle}
             center={center}
-            zoom={5}
+            zoom={zoom}
             onLoad={onLoad}
             onUnmount={onUnmount}
         >
             { /* Child components, such as markers, info windows, etc. */}
             <>
-              
-                    
+
+
                 <PolylineF
-                path={flightPlanCoordinates}
-                options={options}
+                    path={flightPlanCoordinates}
+                    options={options}
                 />
-                
+
             </>
         </GoogleMap>
     ) : <></>
