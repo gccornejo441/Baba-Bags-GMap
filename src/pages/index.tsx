@@ -1,75 +1,72 @@
-import { useForm, SubmitHandler } from 'react-hook-form';
+import Head from 'next/head';
+import Image from 'next/image';
+
+import styles from '@/styles/Home.module.css';
+import { useState } from 'react';
+
+import { useForm, SubmitHandler } from "react-hook-form";
 import { collection, addDoc, getDocs } from 'firebase/firestore';
 import { database } from '../../firebaseConfig.js';
-import Geocode from 'react-geocode';
-import GMap from '../../components/GMap';
+import Geocode from "react-geocode";
+import GMap from '../../components/GMap'
 import * as React from 'react';
 
 type Inputs = {
-  username: string;
-  city: string;
-  message: string;
+  username: string,
+  city: string,
+  message: string,
 };
 
 interface ILocation {
-  _id: string;
+  _id: string,
   pos: {
-    lat: string;
-    lng: string;
-  };
-}
-[];
+    lat: string,
+    lng: string
+  }
+}[]
 
-const dbInstance = collection(database, `baba_gift_bags`);
-Geocode.setApiKey(process.env.GOOGLEAPI!);
+const dbInstance = collection(database, 'baba_gift_bags');
+Geocode.setApiKey(process.env.GOOGLEAPI);
 // Get address from latitude & longitude.
 
 export default function Home() {
   const [geoAddress, setGeoAdress] = React.useState({ lat: null, lng: null });
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<Inputs>();
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
   
-  const [locationData, setLocationData] = React.useState<ILocation>();
-  
-  React.useEffect(() => {
-    console.log(`locationData: `, locationData);
-    
-  },[locationData])
-  
-  const insert = async ({ ...data }: Inputs) => {
-    // Get latitude & longitude from address.
-    Geocode.fromAddress(data.city).then(
-      (response) => {
-        const { lat, lng } = response.results[0].geometry.location;
-        console.log(lat, lng);
-        setGeoAdress({ lat, lng })
-      },
-      (error) => {
-        console.error(error);
-      }
-    );
-    addDoc(dbInstance, {
-      _id: data.username,
-      pos: geoAddress
-    })
-  };
+  const [locationData, setLocationData] = React.useState<ILocation>()
 
   const getDoc = async () => {
-    // getDocs(dbInstance).then((data) => {
-    //   data.docs.map((item) => {
-    //     setLocationData({ ...item.data() }._id);
-    //   });
-    // });
-  };
+    getDocs(dbInstance).then((data) => {
+      data.docs.map((item) => {
+        setLocationData({...item.data()}._id)
+      })
+    })
+  }
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
-      console.log(data)
+  console.log("locationData: ", locationData);
+
+  // const insert = async ({ ...data }: Inputs) => {
+  //   // Get latitude & longitude from address.
+  //   Geocode.fromAddress(data.city).then(
+  //     (response) => {
+  //       const { lat, lng } = response.results[0].geometry.location;
+  //       console.log(lat, lng);
+  //       setGeoAdress({ lat, lng })
+  //     },
+  //     (error) => {
+  //       console.error(error);
+  //     }
+  //   );
+  //   addDoc(dbInstance, {
+  //     _id: data.username,
+  //     pos: geoAddress
+  //   })
+  // }
+
+  const onSubmit: SubmitHandler<Inputs> = data => {
     // insert(data);
   };
+
 
   return (
     <div>
@@ -80,84 +77,56 @@ export default function Home() {
               <div className="px-4 py-5 bg-white sm:p-6">
                 <div className="grid grid-cols-6 gap-6">
                   <div className="col-span-6 sm:col-span-3">
-                    <label
-                      htmlFor="first-name"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Username
-                    </label>
-                    <input
-                      defaultValue=""
-                      {...register(`username`)}
-                      type="text"
-                      name="username"
-                      id="username"
-                      autoComplete="given-name"
-                      className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                    />
+                    <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">Username</label>
+                    <input defaultValue="" {...register("username")} type="text" name="username" id="username" autoComplete="given-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                   </div>
                 </div>
                 <div className="grid grid-cols-6 gap-6">
                   <div className="col-span-6 sm:col-span-3">
-                    <label
-                      htmlFor="city"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      City
-                    </label>
-                    <input
-                      defaultValue=""
-                      {...register(`city`)}
-                      type="text"
-                      name="city"
-                      id="city"
-                      autoComplete="given-name"
-                      className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                    />
+                    <label htmlFor="city" className="block text-sm font-medium text-gray-700">City</label>
+                    <input defaultValue="" {...register("city")} type="text" name="city" id="city" autoComplete="given-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                   </div>
                 </div>
                 <div className="grid grid-cols-6 gap-6">
                   <div className="col-span-6 sm:col-span-3">
-                    <label
-                      htmlFor="first-name"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Note
-                    </label>
-                    <input
-                      defaultValue=""
-                      {...register(`message`)}
-                      type="text"
-                      name="message"
-                      id="message"
-                      autoComplete="given-name"
-                      className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                    />
+                    <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">Note</label>
+                    <input defaultValue="" {...register("message")} type="text" name="message" id="message" autoComplete="given-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                   </div>
                 </div>
               </div>
               <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
-                <button
-                  type="submit"
-                  className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={getDoc}
-                  className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  Report
-                </button>
+                <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Save</button>
+                <button onClick={getDoc} className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Report</button>
               </div>
             </div>
           </form>
         </div>
+        <div className="py-10 px-5">
+        <form >
+        <div className="w-1/2">
+          <h2>UI TEST INPUT COORDINATES</h2>
+        <div className="col-span-6 sm:col-span-3">
+                    <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">Lat</label>
+                    <input defaultValue="longitude" type="number" name="lat" id="lat" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                  </div>
+                  <div className="col-span-6 sm:col-span-3">
+                    <label htmlFor="latitude" className="block text-sm font-medium text-gray-700">Lan</label>
+                    <input defaultValue="" type="number" name="lan" id="lan" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                  </div>
+                  <div className="col-span-6 sm:col-span-3">
+                    <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" >Submit</button>
+                  </div>
+        </div>
+
+        </form>
+        </div>
 
         <div>
-          {/* <GMap /> */}
+          <GMap
+          />
         </div>
       </div>
     </div>
+
   );
 }

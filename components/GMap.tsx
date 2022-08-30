@@ -7,45 +7,39 @@ import Geocode from "react-geocode";
 // We will use these things from the lib
 import {
     GoogleMap,
-    MarkerF,
     InfoWindow,
     Polyline,
     useLoadScript,
-    PolylineF
+    PolylineF,
+    MarkerF
 } from "@react-google-maps/api";
 
 
-const googM = process.env.GOOGLEAPI!;
+const googM = `${process.env.GOOGLEAPI}`
 
 const containerStyle = {
     height: "70vh",
     width: "100%"
 };
 
-const divStyle = {
-    background: `white`,
-    border: `1px solid #ccc`,
-    padding: 15
-}
 
 const GMap = ({ ...props }) => {
-    const [center, setCenter] = React.useState({ lat: 44.076613, lng: -98.362239833 });
+    const [center, setCenter] = React.useState({ lat: 33.899253971669125, lng: -117.56329883655853 });
     const [zoom, setZoom] = React.useState(5);
-    const [index, setIndex] = React.useState(1);
-
+    
     const { isLoaded } = useLoadScript({
         id: 'google-map-script',
-        googleMapsApiKey: googM
+        googleMapsApiKey: "AIzaSyB44B4NFC_nSRBMq8YcRtHX7xFgT5RnHWg"
     })
 
     const [map, setMap] = React.useState(null)
 
-    const onLoad = React.useCallback(function callback(map: any) {
+    const onLoad = React.useCallback(function callback(map) {
         map.setZoom(zoom)
         setMap(map)
     }, [])
 
-    const onUnmount = React.useCallback(function callback(map: any) {
+    const onUnmount = React.useCallback(function callback(map) {
         setMap(null)
     }, [])
 
@@ -61,41 +55,39 @@ const GMap = ({ ...props }) => {
         editable: false,
         visible: true,
         radius: 30000,
-        paths: [{ center }],
+        paths: [{center}],
         zIndex: 1
     };
 
     const flightPlanCoordinates = [
-        { lat: 39.09366509575983, lng: -94.58751660204751 },
-        { lat: 33.889029692567824, lng: -117.5637737005964},
-        { ...center }
+        {...center}
     ];
+
+    // This will handle the right click event on the initial marker.
+    const onMarkerRightClick = () => {
+        alert("This is the initialization point for Baba Gift Bag: `S4D56F4SD`")
+    }
 
     return isLoaded ? (
         <GoogleMap
+            zoom={zoom}
             mapContainerStyle={containerStyle}
             center={center}
-            zoom={zoom}
             onLoad={onLoad}
             onUnmount={onUnmount}
         >
-            <InfoWindow
-                position={center}
-                zIndex={1}
-            >
-                <div style={divStyle}>
-                    <h1>InfoWindow</h1>
-                </div>
-            </InfoWindow>
-
-                <MarkerF
-                zIndex={2}
-                    position={center}
-                />
+            { /* Child components, such as markers, info windows, etc. */}
+            <>
+            <MarkerF
+            position={center}
+            onRightClick={onMarkerRightClick}
+            />
                 <PolylineF
-                    path={flightPlanCoordinates}
-                    options={options}
+                path={flightPlanCoordinates}
+                options={options}
                 />
+                
+            </>
         </GoogleMap>
     ) : <></>
 }
