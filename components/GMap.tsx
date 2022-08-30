@@ -7,7 +7,7 @@ import Geocode from "react-geocode";
 // We will use these things from the lib
 import {
     GoogleMap,
-    Marker,
+    MarkerF,
     InfoWindow,
     Polyline,
     useLoadScript,
@@ -22,10 +22,16 @@ const containerStyle = {
     width: "100%"
 };
 
+const divStyle = {
+    background: `white`,
+    border: `1px solid #ccc`,
+    padding: 15
+}
 
 const GMap = ({ ...props }) => {
     const [center, setCenter] = React.useState({ lat: 44.076613, lng: -98.362239833 });
     const [zoom, setZoom] = React.useState(5);
+    const [index, setIndex] = React.useState(1);
 
     const { isLoaded } = useLoadScript({
         id: 'google-map-script',
@@ -61,6 +67,7 @@ const GMap = ({ ...props }) => {
 
     const flightPlanCoordinates = [
         { lat: 39.09366509575983, lng: -94.58751660204751 },
+        { lat: 33.889029692567824, lng: -117.5637737005964},
         { ...center }
     ];
 
@@ -72,16 +79,23 @@ const GMap = ({ ...props }) => {
             onLoad={onLoad}
             onUnmount={onUnmount}
         >
-            { /* Child components, such as markers, info windows, etc. */}
-            <>
+            <InfoWindow
+                position={center}
+                zIndex={1}
+            >
+                <div style={divStyle}>
+                    <h1>InfoWindow</h1>
+                </div>
+            </InfoWindow>
 
-
+                <MarkerF
+                zIndex={2}
+                    position={center}
+                />
                 <PolylineF
                     path={flightPlanCoordinates}
                     options={options}
                 />
-
-            </>
         </GoogleMap>
     ) : <></>
 }

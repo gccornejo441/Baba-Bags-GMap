@@ -21,7 +21,7 @@ interface ILocation {
 [];
 
 const dbInstance = collection(database, `baba_gift_bags`);
-// Geocode.setApiKey(process.env.GOOGLEAPI);
+Geocode.setApiKey(process.env.GOOGLEAPI!);
 // Get address from latitude & longitude.
 
 export default function Home() {
@@ -32,38 +32,42 @@ export default function Home() {
     watch,
     formState: { errors },
   } = useForm<Inputs>();
-
+  
   const [locationData, setLocationData] = React.useState<ILocation>();
-
-  const getDoc = async () => {
-    getDocs(dbInstance).then((data) => {
-      data.docs.map((item) => {
-        setLocationData({ ...item.data() }._id);
-      });
-    });
-  };
-
-  console.log(`locationData: `, locationData);
-
+  
+  React.useEffect(() => {
+    console.log(`locationData: `, locationData);
+    
+  },[locationData])
+  
   const insert = async ({ ...data }: Inputs) => {
     // Get latitude & longitude from address.
-    // Geocode.fromAddress(data.city).then(
-    //   (response) => {
-    //     const { lat, lng } = response.results[0].geometry.location;
-    //     console.log(lat, lng);
-    //     setGeoAdress({ lat, lng })
-    //   },
-    //   (error) => {
-    //     console.error(error);
-    //   }
-    // );
-    // addDoc(dbInstance, {
-    //   _id: data.username,
-    //   pos: geoAddress
-    // })
+    Geocode.fromAddress(data.city).then(
+      (response) => {
+        const { lat, lng } = response.results[0].geometry.location;
+        console.log(lat, lng);
+        setGeoAdress({ lat, lng })
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+    addDoc(dbInstance, {
+      _id: data.username,
+      pos: geoAddress
+    })
+  };
+
+  const getDoc = async () => {
+    // getDocs(dbInstance).then((data) => {
+    //   data.docs.map((item) => {
+    //     setLocationData({ ...item.data() }._id);
+    //   });
+    // });
   };
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
+      console.log(data)
     // insert(data);
   };
 
@@ -151,7 +155,7 @@ export default function Home() {
         </div>
 
         <div>
-          <GMap />
+          {/* <GMap /> */}
         </div>
       </div>
     </div>
