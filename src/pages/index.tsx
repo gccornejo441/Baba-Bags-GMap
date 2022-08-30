@@ -30,7 +30,9 @@ Geocode.setApiKey(process.env.GOOGLEAPI);
 // Get address from latitude & longitude.
 
 export default function Home() {
-  const [geoAddress, setGeoAdress] = React.useState({ lat: null, lng: null });
+  const [latd, setLat] = React.useState(latd: "");
+  const [land, setLan] = React.useState(land: "")
+
   const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
   
   const [locationData, setLocationData] = React.useState<ILocation>()
@@ -66,6 +68,17 @@ export default function Home() {
   const onSubmit: SubmitHandler<Inputs> = data => {
     // insert(data);
   };
+
+  const handleInputChange = (e: React.FormEvent<HTMLInputElement>) => {
+    const dataName = e.currentTarget.name;
+    
+
+    if (dataName == "lat" && data !== null) {
+      setGeoAdress({ lat: data, lan: data })
+    }
+    console.log("DATA: ", data);
+    
+  }
 
 
   return (
@@ -107,14 +120,14 @@ export default function Home() {
           <h2>UI TEST INPUT COORDINATES</h2>
         <div className="col-span-6 sm:col-span-3">
                     <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">Lat</label>
-                    <input defaultValue="longitude" type="number" name="lat" id="lat" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                    <input defaultValue="longitude" onChange={handleInputChange} type="number" name="lat" id="lat" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                   </div>
                   <div className="col-span-6 sm:col-span-3">
                     <label htmlFor="latitude" className="block text-sm font-medium text-gray-700">Lan</label>
-                    <input defaultValue="" type="number" name="lan" id="lan" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                    <input defaultValue="" onChange={handleInputChange} type="number" name="lan" id="lan" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                   </div>
                   <div className="col-span-6 sm:col-span-3">
-                    <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" >Submit</button>
+                    <button type="submit"  className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" >Submit</button>
                   </div>
         </div>
 

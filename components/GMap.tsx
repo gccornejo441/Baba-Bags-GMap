@@ -63,10 +63,12 @@ const GMap = ({ ...props }) => {
         {...center}
     ];
 
-    // This will handle the right click event on the initial marker.
+    // This will handle the right click events on the initial marker.
     const onMarkerRightClick = () => {
         alert("This is the initialization point for Baba Gift Bag: `S4D56F4SD`")
     }
+
+    const image = "bbStick.png";
 
     return isLoaded ? (
         <GoogleMap
@@ -81,6 +83,7 @@ const GMap = ({ ...props }) => {
             <MarkerF
             position={center}
             onRightClick={onMarkerRightClick}
+            icon={image}
             />
                 <PolylineF
                 path={flightPlanCoordinates}
