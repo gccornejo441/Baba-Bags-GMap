@@ -25,16 +25,21 @@ interface ILocation {
   }
 }[]
 
-const dbInstance = collection(database, 'baba_gift_bags');
-Geocode.setApiKey(process.env.GOOGLEAPI);
+interface IGeolocation {
+  lat: string,
+  lng: string
+}[]
+
+// const dbInstance = collection(database, 'baba_gift_bags');
+// Geocode.setApiKey(process.env.GOOGLEAPI);
 // Get address from latitude & longitude.
 
 export default function Home() {
-  const [latd, setLat] = React.useState(latd: "");
-  const [land, setLan] = React.useState(land: "")
+  const [lat, setLat] = React.useState("")
+  const [lng, setLng] = React.useState("")
+  const [ geoLocation, setGeoLocation ] = React.useState<IGeolocation>({ lat: "0", lng: "0" });
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
-  
   const [locationData, setLocationData] = React.useState<ILocation>()
 
   const getDoc = async () => {
@@ -69,15 +74,37 @@ export default function Home() {
     // insert(data);
   };
 
-  const handleInputChange = (e: React.FormEvent<HTMLInputElement>) => {
-    const dataName = e.currentTarget.name;
-    
+  interface IData {
+    value: string,
+    valueName: string
+  }
 
-    if (dataName == "lat" && data !== null) {
-      setGeoAdress({ lat: data, lan: data })
-    }
-    console.log("DATA: ", data);
+  const clearingFunct = ({value, valueName}: IData) => {
+    return new Promise((resolve) => {
+      if (valueName == "lat" && value !== null) {
+        setLat(value)
+      } else {
+        setLng(value)
+      }
+      resolve('resolved')
+    })
+  }
+
+  const handleInputChange = async (e: React.FormEvent<HTMLInputElement>) => {
+    const valueName = e.currentTarget.name;
+    const value = e.currentTarget.value;
     
+     const result = await clearingFunct({value, valueName})
+     console.log("result ", result);
+
+     setGeoLocation({ lat: lat, lng: lng })
+  }
+
+  console.log(`Here is your lat: ${lat} and lng: ${lng} data..........................GEOLOCATION ${geoLocation.lat}`)
+
+  const longNLat = {
+    lat: lat,
+    lng: lng
   }
 
 
@@ -119,27 +146,25 @@ export default function Home() {
         <div className="w-1/2">
           <h2>UI TEST INPUT COORDINATES</h2>
         <div className="col-span-6 sm:col-span-3">
-                    <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">Lat</label>
-                    <input defaultValue="longitude" onChange={handleInputChange} type="number" name="lat" id="lat" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                    <label htmlFor="lat" className="block text-sm font-medium text-gray-700">Latitude</label>
+                    <input onChange={handleInputChange} type="number" name="lat" id="lat" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                   </div>
                   <div className="col-span-6 sm:col-span-3">
-                    <label htmlFor="latitude" className="block text-sm font-medium text-gray-700">Lan</label>
-                    <input defaultValue="" onChange={handleInputChange} type="number" name="lan" id="lan" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                    <label htmlFor="lng" className="block text-sm font-medium text-gray-700">Longitude</label>
+                    <input onChange={handleInputChange} type="number" name="lng" id="lng" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                   </div>
                   <div className="col-span-6 sm:col-span-3">
                     <button type="submit"  className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" >Submit</button>
                   </div>
         </div>
-
         </form>
         </div>
-
         <div>
-          <GMap
-          />
+          {/* <GMap
+          props={longNLat}
+          /> */}
         </div>
       </div>
     </div>
-
   );
 }
