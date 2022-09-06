@@ -5,11 +5,14 @@ import styles from '@/styles/Home.module.css';
 import { useState } from 'react';
 
 import { useForm, SubmitHandler } from "react-hook-form";
-import { collection, addDoc, getDocs } from 'firebase/firestore';
-import { database } from '../../firebaseConfig.js';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { database, coordinatesCol } from '../../firebaseConfig';
 import Geocode from "react-geocode";
 import GMap from '../../components/GMap'
 import * as React from 'react';
+
+import { Coordinate } from '../../src/types'
+
 
 type Inputs = {
   username: string,
@@ -30,8 +33,8 @@ interface IGeolocation {
   lng: number
 }
 
-// const dbInstance = collection(database, 'baba_gift_bags');
-// Geocode.setApiKey(process.env.GOOGLEAPI);
+const dbInstance = collection(database, 'baba-gift-wraps');
+Geocode.setApiKey(process.env.GOOGLEAPI);
 // Get address from latitude & longitude.
 
 export default function Home() {
@@ -40,36 +43,57 @@ export default function Home() {
   const [ geoLocation, setGeoLocation ] = React.useState<IGeolocation>({ lat: 0, lng: 0 });
 
   const [ coordinates,  setCoordinate] = React.useState<IGeolocation[]>([]);
+  const [ point, setPoints] = React.useState()
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
   const [locationData, setLocationData] = React.useState<ILocation>()
 
-  const getDoc = async () => {
-    getDocs(dbInstance).then((data) => {
-      data.docs.map((item) => {
-        setLocationData({...item.data()}._id)
-      })
-    })
-  }
+//  const getDocs = async (database) => {
+  // const docRef = doc(database, 'baba-gift-wraps', 'klmXL2cGhtmVslQp7WBV')
+  // const docSnap = await getDoc(docRef)
 
-
-  // const insert = async ({ ...data }: Inputs) => {
-  //   // Get latitude & longitude from address.
-  //   Geocode.fromAddress(data.city).then(
-  //     (response) => {
-  //       const { lat, lng } = response.results[0].geometry.location;
-  //       console.log(lat, lng);
-  //       setGeoAdress({ lat, lng })
-  //     },
-  //     (error) => {
-  //       console.error(error);
-  //     }
-  //   );
-  //   addDoc(dbInstance, {
-  //     _id: data.username,
-  //     pos: geoAddress
-  //   })
+  // if (docSnap.exists()) {
+  //   console.log("Document data:", docSnap.data());
+  // } else {
+  //   // doc.data() will be undefined in this case
+  //   console.log("No such document!");
   // }
+
+  // const giftbagCol = collection(database, 'baba-gift-wraps');
+  // const giftBagSnapshot = await getDocs(giftbagCol);
+  // const giftBag = giftBagSnapshot.docs.map(doc => doc.data());
+  // return giftBag;
+//  }
+
+const GetCoordinates = async () => {
+  const coordinateDocs = await getDocs(coordinatesCol)
+      coordinateDocs.docs.forEach((coordinateDoc) => {
+        const coordinate = coordinateDoc.data()
+        setCoordinate(value => [...value, { lat: coordinate.lat, lng: coordinate.lng }])
+      })
+    }   
+    
+
+  const insert = async ({ ...data }: IGeolocation) => {
+    // Get latitude & longitude from address.
+    // Geocode.fromAddress(data.city).then(
+    //   (response) => {
+    //     const { lat, lng } = response.results[0].geometry.location;
+    //     console.log(lat, lng);
+    //     setGeoAdress({ lat, lng })
+    //   },
+    //   (error) => {
+    //     console.error(error);
+    //   }
+    // );
+
+    addDoc(dbInstance, {
+      lat: data.lat,
+      lng: data.lng
+    })
+
+    console.log("Data submitted to db.", data)
+  }
 
   const onSubmit: SubmitHandler<Inputs> = data => {
     // insert(data);
@@ -80,47 +104,50 @@ export default function Home() {
     valueName: string
   }
 
-  const clearingFunct = ({value, valueName}: IData) => {
-    let newValue: number = +value
-    return new Promise((resolve) => {
-      if (valueName == "lat" && newValue !== null) {
-        setLat(newValue)
-      } else {
-        setLng(newValue)
-      }
-      resolve('resolved')
-    })
-  }
+  // const clearingFunct = ({value, valueName}: IData) => {
+  //   let newValue: number = +value
+  //   return new Promise((resolve) => {
+  //     if (valueName == "lat" && newValue !== null) {
+  //       setLat(newValue)
+  //     } else {
+  //       setLng(newValue)
+  //     }
+  //     resolve('resolved')
+  //   })
+  // }
 
-  const handleInputChange = async (e: React.FormEvent<HTMLInputElement>) => {
-    const valueName = e.currentTarget.name;
-    const value = e.currentTarget.value;
+  // const handleInputChange = async (e: React.FormEvent<HTMLInputElement>) => {
+  //   const valueName = e.currentTarget.name;
+  //   const value = e.currentTarget.value;
     
-     const result = await clearingFunct({value, valueName})
-     console.log("result ", result);
+  //    const result = await clearingFunct({value, valueName})
+  //    console.log("result ", result);
 
-     setGeoLocation({ lat: lat, lng: lng })
-  }
+  //    setGeoLocation({ lat: lat, lng: lng })
 
-  
-  
-  const handleData: React.FormEventHandler<HTMLFormElement> = (e) => {
-    e.preventDefault()
+  //   }
+    
+    
+    
+  //   const handleData: React.FormEventHandler<HTMLFormElement> = (e) => {
+  //     e.preventDefault()
+      
+  //     setCoordinate(value => [...value, {
+  //       lat: lat,
+  //       lng: lng
+  //     }])
+  //     insert({ lat: lat, lng: lng });
+      
 
-    setCoordinate(value => [...value, {
-      lat: lat,
-      lng: lng
-    }])
+  //   console.log(`Here is your lat: ${lat} and lng: ${lng} data..........................GEOLOCATION ${coordinates.map((value) => value.lng)}`)
 
-    console.log(`Here is your lat: ${lat} and lng: ${lng} data..........................GEOLOCATION ${coordinates.map((value) => value.lng)}`)
-
-  }
+  // }
 
 
   return (
     <div>
       <div className="py-12 bg-white text-black">
-        {/* <div className="mt-5 md:mt-0 md:col-span-2 mx-auto  w-1/2 flex justify-center">
+        <div className="mt-5 md:mt-0 md:col-span-2 mx-auto  w-1/2 flex justify-center">
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="shadow overflow-hidden sm:rounded-md">
               <div className="px-4 py-5 bg-white sm:p-6">
@@ -145,12 +172,12 @@ export default function Home() {
               </div>
               <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
                 <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Save</button>
-                <button onClick={getDoc} className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Report</button>
+                <button onClick={GetCoordinates} className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Report</button>
               </div>
             </div>
           </form>
-        </div> */}
-
+        </div>
+{/* 
         <div className="py-10 px-5">
         <form onSubmit={handleData} >
         <div className="w-1/2">
@@ -168,7 +195,7 @@ export default function Home() {
                   </div>
         </div>
         </form>
-        </div>
+        </div> */}
         <div>
           <GMap
           coordinates={coordinates}
