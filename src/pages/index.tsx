@@ -40,7 +40,7 @@ Geocode.setApiKey(process.env.GOOGLEAPI);
 export default function Home() {
   const [lat, setLat] = React.useState(0)
   const [lng, setLng] = React.useState(0)
-  const [ geoLocation, setGeoLocation ] = React.useState<IGeolocation>({ lat: 0, lng: 0 });
+  const [ geoLocation, setGeoLocation ] = React.useState<IGeolocation[]>([{ lat: 0, lng: 0 }]);
 
   const [ coordinates,  setCoordinate] = React.useState<IGeolocation[]>([]);
   const [ point, setPoints] = React.useState()
@@ -69,10 +69,11 @@ const GetCoordinates = async () => {
   const coordinateDocs = await getDocs(coordinatesCol)
       coordinateDocs.docs.forEach((coordinateDoc) => {
         const coordinate = coordinateDoc.data()
-        setCoordinate(value => [...value, { lat: coordinate.lat, lng: coordinate.lng }])
+        setGeoLocation((value) => [...value, {lat: coordinate.lat, lng: coordinate.lng}])
+        // setCoordinate(value => [...value, { lat: coordinate.lat, lng: coordinate.lng }])
       })
     }   
-    
+  
 
   const insert = async ({ ...data }: IGeolocation) => {
     // Get latitude & longitude from address.
@@ -198,7 +199,7 @@ const GetCoordinates = async () => {
         </div> */}
         <div>
           <GMap
-          coordinates={coordinates}
+            geoLocation={geoLocation}
           />
         </div>
       </div>

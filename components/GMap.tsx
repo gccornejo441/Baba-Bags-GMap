@@ -26,9 +26,7 @@ const containerStyle = {
 const GMap = ({ ...props }) => {
     const [center, setCenter] = React.useState({ lat: 41 , lng: -88 })
     const [zoom, setZoom] = React.useState(5);
-
-    const [ nest, setNest] = React.useState({ lat: 0 , lng: 0 })
-
+    const [ poly, setPoly] = React.useState()
     
     const { isLoaded } = useLoadScript({
         id: 'google-map-script',
@@ -62,11 +60,9 @@ const GMap = ({ ...props }) => {
         zIndex: 1
     };
 
-
     const flightPlanCoordinates = [
-        {...center}, 
+        { ...center }, ...props.geoLocation
     ];
-
 
     // This will handle the right click events on the initial marker.
     const onMarkerRightClick = () => {
