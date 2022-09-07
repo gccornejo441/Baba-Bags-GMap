@@ -26,7 +26,6 @@ const containerStyle = {
 const GMap = ({ ...props }) => {
     const [center, setCenter] = React.useState({ lat: 41 , lng: -88 })
     const [zoom, setZoom] = React.useState(5);
-    const [ poly, setPoly] = React.useState()
     
     const { isLoaded } = useLoadScript({
         id: 'google-map-script',

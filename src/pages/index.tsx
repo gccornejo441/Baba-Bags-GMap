@@ -5,20 +5,13 @@ import styles from '@/styles/Home.module.css';
 import { useState } from 'react';
 
 import { useForm, SubmitHandler } from "react-hook-form";
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
-import { database, coordinatesCol } from '../../firebaseConfig';
+import { getFirestore, collection, getDocs, setDoc, doc } from 'firebase/firestore';
+import { database, coordinatesCol, giftWrapCol } from '../../firebaseConfig';
 import Geocode from "react-geocode";
 import GMap from '../../components/GMap'
 import * as React from 'react';
 
-import { Coordinate } from '../../src/types'
-
-
-type Inputs = {
-  username: string,
-  city: string,
-  message: string,
-};
+import { Coordinate, Inputs } from '../../src/types'
 
 interface ILocation {
   _id: string,
@@ -40,7 +33,7 @@ Geocode.setApiKey(process.env.GOOGLEAPI);
 export default function Home() {
   const [lat, setLat] = React.useState(0)
   const [lng, setLng] = React.useState(0)
-  const [ geoLocation, setGeoLocation ] = React.useState<IGeolocation[]>([{ lat: 0, lng: 0 }]);
+  const [ geoLocation, setGeoLocation ] = React.useState<IGeolocation[]>([{ lat: 33, lng: -117 }]);
 
   const [ coordinates,  setCoordinate] = React.useState<IGeolocation[]>([]);
   const [ point, setPoints] = React.useState()
@@ -73,31 +66,38 @@ const GetCoordinates = async () => {
         // setCoordinate(value => [...value, { lat: coordinate.lat, lng: coordinate.lng }])
       })
     }   
-  
 
-  const insert = async ({ ...data }: IGeolocation) => {
-    // Get latitude & longitude from address.
-    // Geocode.fromAddress(data.city).then(
-    //   (response) => {
-    //     const { lat, lng } = response.results[0].geometry.location;
-    //     console.log(lat, lng);
-    //     setGeoAdress({ lat, lng })
-    //   },
-    //   (error) => {
-    //     console.error(error);
-    //   }
-    // );
-
-    addDoc(dbInstance, {
-      lat: data.lat,
-      lng: data.lng
+  const setGiftWrap = async (value : Inputs, lat: number, lng: number ) => {
+    const giftWrapDocs = doc(giftWrapCol, 'giftwrap')
+    
+    await setDoc(giftWrapDocs, {
+      giftwrap_id: value.giftwrap_id,
+      city: value.city,
+      state: value.state,
+      memo: value.memo,
+      coordinates: {
+        lat: lat,
+        lng: lng
+      }
     })
+  }
 
+  const insert = async ({ ...data }: Inputs) => {
+    // Get latitude & longitude from address.
+    Geocode.fromAddress(`${data.city}, ${data.state}`).then(
+      (response) => {
+        const { lat, lng } = response.results[0].geometry.location;
+        setGiftWrap(data, lat, lng)
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
     console.log("Data submitted to db.", data)
   }
 
   const onSubmit: SubmitHandler<Inputs> = data => {
-    // insert(data);
+    insert(data);
   };
 
   interface IData {
@@ -154,20 +154,26 @@ const GetCoordinates = async () => {
               <div className="px-4 py-5 bg-white sm:p-6">
                 <div className="grid grid-cols-6 gap-6">
                   <div className="col-span-6 sm:col-span-3">
-                    <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">Username</label>
-                    <input defaultValue="" {...register("username")} type="text" name="username" id="username" autoComplete="given-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                    <label htmlFor="giftwrap id" className="block text-sm font-medium text-gray-700">GiftWrap ID</label>
+                    <input defaultValue="" {...register("giftwrap_id")} type="text" name="giftwrap_id" id="giftwrap_id" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                   </div>
                 </div>
                 <div className="grid grid-cols-6 gap-6">
                   <div className="col-span-6 sm:col-span-3">
                     <label htmlFor="city" className="block text-sm font-medium text-gray-700">City</label>
-                    <input defaultValue="" {...register("city")} type="text" name="city" id="city" autoComplete="given-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                    <input defaultValue="" {...register("city")} type="text" name="city" id="city" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                   </div>
                 </div>
                 <div className="grid grid-cols-6 gap-6">
                   <div className="col-span-6 sm:col-span-3">
-                    <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">Note</label>
-                    <input defaultValue="" {...register("message")} type="text" name="message" id="message" autoComplete="given-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                    <label htmlFor="state" className="block text-sm font-medium text-gray-700">State</label>
+                    <input defaultValue="" {...register("state")} type="text" name="state" id="state" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-6 gap-6">
+                  <div className="col-span-6 sm:col-span-3">
+                    <label htmlFor="memo" className="block text-sm font-medium text-gray-700">Memo</label>
+                    <input defaultValue="" {...register("memo")} type="text" name="memo" id="memo" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                   </div>
                 </div>
               </div>

@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { collection, CollectionReference, getFirestore, DocumentData } from 'firebase/firestore';
-import { Coordinate } from "@/types";
+import { Coordinate, Inputs } from "@/types";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -29,3 +29,4 @@ const createCollection = <T = DocumentData>(collectionName: string) => {
 
 // export all your collections
 export const coordinatesCol = createCollection<Coordinate>('coordinate')
+export const giftWrapCol = createCollection<Inputs>('giftwrap')
