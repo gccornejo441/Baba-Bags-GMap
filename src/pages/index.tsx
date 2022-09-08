@@ -11,15 +11,7 @@ import Geocode from "react-geocode";
 import GMap from '../../components/GMap'
 import * as React from 'react';
 
-import { Coordinate, Inputs } from '../../src/types'
-
-interface ILocation {
-  _id: string,
-  pos: {
-    lat: string,
-    lng: string
-  }
-}[]
+import { Inputs } from '../../src/types'
 
 interface IGeolocation {
   lat: number,
@@ -28,30 +20,33 @@ interface IGeolocation {
 
 const dbInstance = collection(database, 'baba-gift-wraps');
 Geocode.setApiKey(process.env.GOOGLEAPI);
-// Get address from latitude & longitude.
 
 export default function Home() {
-  const [ geoLocation, setGeoLocation ] = React.useState<IGeolocation[]>([{ lat: 33, lng: -117 }]);
+  const [geoLocation, setGeoLocation] = React.useState<IGeolocation[]>([{ lat: 33, lng: -117 }]);
 
-  let [ point, setPoints] = React.useState(1)
+  let [point, setPoints] = React.useState(1)
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
-  
-const GetCoordinates = async () => {
-  const coordinateDocs = await getDocs(coordinatesCol)
-      coordinateDocs.docs.forEach((coordinateDoc) => {
-        const coordinate = coordinateDoc.data()
-        setGeoLocation((value) => [...value, {lat: coordinate.lat, lng: coordinate.lng}])
-        // setCoordinate(value => [...value, { lat: coordinate.lat, lng: coordinate.lng }])
-      })
-    }   
 
-  const setGiftWrap = async (value : Inputs, lat: number, lng: number ) => {
+  // Updates Geolocation with coodinates
+  const GetCoordinates = async () => {
+    const coordinateDocs = await getDocs(coordinatesCol)
+    coordinateDocs.docs.forEach((coordinateDoc) => {
+      const coordinate = coordinateDoc.data()
+
+      // Updates GeoLocation State
+      setGeoLocation((value) => [...value, { lat: coordinate.lat, lng: coordinate.lng }])
+    })
+  }
+
+  // Sets form data into Firestore
+  const SetGiftWrap = async (value: Inputs, lat: number, lng: number) => {
+    // Incrementing value for document numberization
     point++;
     setPoints(point)
 
     const giftWrapDocs = doc(giftWrapCol, `giftwrap_${point}`)
-    
+
     await setDoc(giftWrapDocs, {
       giftwrap_id: value.giftwrap_id,
       city: value.city,
@@ -69,7 +64,7 @@ const GetCoordinates = async () => {
     Geocode.fromAddress(`${data.city}, ${data.state}`).then(
       (response) => {
         const { lat, lng } = response.results[0].geometry.location;
-        setGiftWrap(data, lat, lng)
+        SetGiftWrap(data, lat, lng)
       },
       (error) => {
         console.error(error);
@@ -82,50 +77,6 @@ const GetCoordinates = async () => {
   const onSubmit: SubmitHandler<Inputs> = data => {
     insert(data);
   };
-
-  interface IData {
-    value: string,
-    valueName: string
-  }
-
-  // const clearingFunct = ({value, valueName}: IData) => {
-  //   let newValue: number = +value
-  //   return new Promise((resolve) => {
-  //     if (valueName == "lat" && newValue !== null) {
-  //       setLat(newValue)
-  //     } else {
-  //       setLng(newValue)
-  //     }
-  //     resolve('resolved')
-  //   })
-  // }
-
-  // const handleInputChange = async (e: React.FormEvent<HTMLInputElement>) => {
-  //   const valueName = e.currentTarget.name;
-  //   const value = e.currentTarget.value;
-    
-  //    const result = await clearingFunct({value, valueName})
-  //    console.log("result ", result);
-
-  //    setGeoLocation({ lat: lat, lng: lng })
-
-  //   }
-    
-    
-    
-  //   const handleData: React.FormEventHandler<HTMLFormElement> = (e) => {
-  //     e.preventDefault()
-      
-  //     setCoordinate(value => [...value, {
-  //       lat: lat,
-  //       lng: lng
-  //     }])
-  //     insert({ lat: lat, lng: lng });
-      
-
-  //   console.log(`Here is your lat: ${lat} and lng: ${lng} data..........................GEOLOCATION ${coordinates.map((value) => value.lng)}`)
-
-  // }
 
 
   return (
@@ -167,25 +118,6 @@ const GetCoordinates = async () => {
             </div>
           </form>
         </div>
-{/* 
-        <div className="py-10 px-5">
-        <form onSubmit={handleData} >
-        <div className="w-1/2">
-          <h2>UI TEST INPUT COORDINATES</h2>
-        <div className="col-span-6 sm:col-span-3">
-                    <label htmlFor="lat" className="block text-sm font-medium text-gray-700">Latitude</label>
-                    <input onChange={handleInputChange} type="number" name="lat" id="lat" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                  </div>
-                  <div className="col-span-6 sm:col-span-3">
-                    <label htmlFor="lng" className="block text-sm font-medium text-gray-700">Longitude</label>
-                    <input onChange={handleInputChange} type="number" name="lng" id="lng" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                  </div>
-                  <div className="col-span-6 sm:col-span-3">
-                    <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" >Submit</button>
-                  </div>
-        </div>
-        </form>
-        </div> */}
         <div>
           <GMap
             geoLocation={geoLocation}
