@@ -8,13 +8,12 @@ import { Coordinate, Inputs } from "@/types";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyCjW8HUx8H8zRfJsUCGokM7wewymsxUCxw",
-  authDomain: "baba-bags-giftbags.firebaseapp.com",
-  projectId: "baba-bags-giftbags",
-  storageBucket: "baba-bags-giftbags.appspot.com",
-  messagingSenderId: "178062327900",
-  appId: "1:178062327900:web:a608c82dabbbbe63a9e699",
-  measurementId: "G-1ZSEMXM3XY"
+  apiKey: "AIzaSyByjZe7zSMCuZONQaTj20ZhXmw4QGAFCm0",
+  authDomain: "baba-gift-wraps.firebaseapp.com",
+  projectId: "baba-gift-wraps",
+  storageBucket: "baba-gift-wraps.appspot.com",
+  messagingSenderId: "230586496934",
+  appId: "1:230586496934:web:6ee10b3fc5672780ce0167"
 };
 
 // Initialize Firebase

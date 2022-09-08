@@ -31,33 +31,12 @@ Geocode.setApiKey(process.env.GOOGLEAPI);
 // Get address from latitude & longitude.
 
 export default function Home() {
-  const [lat, setLat] = React.useState(0)
-  const [lng, setLng] = React.useState(0)
   const [ geoLocation, setGeoLocation ] = React.useState<IGeolocation[]>([{ lat: 33, lng: -117 }]);
 
-  const [ coordinates,  setCoordinate] = React.useState<IGeolocation[]>([]);
-  const [ point, setPoints] = React.useState()
+  let [ point, setPoints] = React.useState(1)
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
-  const [locationData, setLocationData] = React.useState<ILocation>()
-
-//  const getDocs = async (database) => {
-  // const docRef = doc(database, 'baba-gift-wraps', 'klmXL2cGhtmVslQp7WBV')
-  // const docSnap = await getDoc(docRef)
-
-  // if (docSnap.exists()) {
-  //   console.log("Document data:", docSnap.data());
-  // } else {
-  //   // doc.data() will be undefined in this case
-  //   console.log("No such document!");
-  // }
-
-  // const giftbagCol = collection(database, 'baba-gift-wraps');
-  // const giftBagSnapshot = await getDocs(giftbagCol);
-  // const giftBag = giftBagSnapshot.docs.map(doc => doc.data());
-  // return giftBag;
-//  }
-
+  
 const GetCoordinates = async () => {
   const coordinateDocs = await getDocs(coordinatesCol)
       coordinateDocs.docs.forEach((coordinateDoc) => {
@@ -68,7 +47,10 @@ const GetCoordinates = async () => {
     }   
 
   const setGiftWrap = async (value : Inputs, lat: number, lng: number ) => {
-    const giftWrapDocs = doc(giftWrapCol, 'giftwrap')
+    point++;
+    setPoints(point)
+
+    const giftWrapDocs = doc(giftWrapCol, `giftwrap_${point}`)
     
     await setDoc(giftWrapDocs, {
       giftwrap_id: value.giftwrap_id,
@@ -93,6 +75,7 @@ const GetCoordinates = async () => {
         console.error(error);
       }
     );
+
     console.log("Data submitted to db.", data)
   }
 
