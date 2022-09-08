@@ -1,8 +1,5 @@
-import { Wrapper, Status } from "@googlemaps/react-wrapper";
-import { createCustomEqual } from "fast-equals";
-import { isLatLngLiteral } from "@googlemaps/typescript-guards";
 import * as React from 'react';
-import Geocode from "react-geocode";
+import { MAP_SETTINGS } from '@/gmapDefaults';
 
 // We will use these things from the lib
 import {
@@ -24,7 +21,7 @@ const containerStyle = {
 
 
 const GMap = ({ ...props }) => {
-    const [center, setCenter] = React.useState({ lat: 41 , lng: -88 })
+    const [center, setCenter] = React.useState(props.geoLocation[0])
     const [zoom, setZoom] = React.useState(5);
     
     const { isLoaded } = useLoadScript({
@@ -59,8 +56,10 @@ const GMap = ({ ...props }) => {
         zIndex: 1
     };
 
-    const flightPlanCoordinates = [
-        { ...center }, ...props.geoLocation
+    console.log("...props.geoLocation, ", ...props.geoLocation)
+
+    const giftwrapCoordinates = [
+        ...props.geoLocation
     ];
 
     // This will handle the right click events on the initial marker.
@@ -74,19 +73,18 @@ const GMap = ({ ...props }) => {
         <GoogleMap
             zoom={zoom}
             mapContainerStyle={containerStyle}
-            center={center}
+            center={MAP_SETTINGS.DEFAULT_CENTER}
             onLoad={onLoad}
             onUnmount={onUnmount}
         >
-            { /* Child components, such as markers, info windows, etc. */}
             <>
             <MarkerF
-            position={center}
+                    position={MAP_SETTINGS.DEFAULT_CENTER}
             onRightClick={onMarkerRightClick}
             icon={image}
             />
                 <PolylineF
-                path={flightPlanCoordinates}
+                path={giftwrapCoordinates}
                 options={options}
                 />
                 

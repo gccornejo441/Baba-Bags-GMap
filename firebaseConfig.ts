@@ -21,11 +21,10 @@ const app = initializeApp(firebaseConfig);
 export const database = getFirestore(app);
 
 
-const createCollection = <T = DocumentData>(collectionName: string) => {
+export const createCollection = <T = DocumentData>(collectionName: string) => {
   return collection(database, collectionName) as CollectionReference<T>
 }
 
 
 // export all your collections
 export const coordinatesCol = createCollection<Coordinate>('coordinate')
-export const giftWrapCol = createCollection<Inputs>('giftwrap')
