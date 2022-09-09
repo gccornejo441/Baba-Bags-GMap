@@ -1,4 +1,4 @@
-import GMap from "components/GMap";
+
 import { useForm, SubmitHandler } from "react-hook-form";
 import { getFirestore, collection, getDocs, setDoc, doc } from 'firebase/firestore';
 import { database, createCollection } from '../../firebaseConfig';
@@ -14,11 +14,11 @@ interface IGeolocation {
 }
 
 const dbInstance = collection(database, 'baba-gift-wraps');
-Geocode.setApiKey(process.env.GOOGLEAPI);
+Geocode.setApiKey("AIzaSyB44B4NFC_nSRBMq8YcRtHX7xFgT5RnHWg");
 
 
 export default function Giftwrap() {
-    const [geoLocation, setGeoLocation] = React.useState<IGeolocation[]>([{ lat: 39, lng: -90 }]);
+    const [geoLocation, setGeoLocation] = React.useState<IGeolocation[]>([{ lat: 41.88, lng: -87.63 }]);
     let [point, setPoints] = React.useState(1)
     const [giftwrapID, setGiftwrapID] = React.useState("")
 
@@ -26,12 +26,13 @@ export default function Giftwrap() {
 
     // Updates Geolocation with coodinates
     const GetCoordinates = async () => {
-        const giftWrapCol = createCollection<Inputs>('giftwrap')
+        console.log('COODINATE: ')
+        //This colleection is static will need to up dynamic in production
+        const giftWrapCol = createCollection<Inputs>('gcornejo441')
         const giftWrapDocs = await getDocs(giftWrapCol)
         giftWrapDocs.docs.forEach((giftWrapDoc) => {
             const giftwrap = giftWrapDoc.data()
 
-            console.log('COODINATE: ', giftwrap)
             // Updates GeoLocation State
             setGeoLocation((value) => [...value, { lat: giftwrap.coordinates.lat, lng: giftwrap.coordinates.lng }])
         })
@@ -117,9 +118,9 @@ export default function Giftwrap() {
                         </div>
                     </form>
                 </div>
-                {/* <GMap
+                <GMap
                     geoLocation={geoLocation}
-                /> */}
+                />
             </div>
         </div>
     );
