@@ -5,8 +5,7 @@ export type Coordinate = {
 
 export type Inputs = {
     giftwrap_id: string,
-    city: string,
-    state: string,
+    zipcode: string,
     memo: string,
     coordinates: {
         lat: number,
