@@ -59,8 +59,6 @@ const GMap = ({ ...props }) => {
         zIndex: 1
     };
 
-    console.log(props.infoBoxData)
-
     const giftwrapCoordinates = [
         ...props.geoLocation
     ];

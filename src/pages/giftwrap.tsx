@@ -60,8 +60,9 @@ export default function Giftwrap() {
         // Get latitude & longitude from address.
         Geocode.fromAddress(`${data.city}, ${data.state}`).then(
             (response) => {
-                const { lat, lng } = response.results[0].geometry.location;
-                SetGiftWrap(data, lat, lng)
+                console.log("Zipcode plsease: ", response.results[0].geometry.location)
+                // const { lat, lng } = response.results[0].geometry.location;
+                // SetGiftWrap(data, lat, lng)
             },
             (error) => {
                 console.error(error);
