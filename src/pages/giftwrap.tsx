@@ -1,39 +1,36 @@
 
 import { useForm, SubmitHandler } from "react-hook-form";
-import { getFirestore, collection, getDocs, setDoc, doc } from 'firebase/firestore';
-import { database, createCollection } from '../../firebaseConfig';
+import { getDocs, setDoc, doc } from 'firebase/firestore';
+import { createCollection } from '../../firebaseConfig';
 import Geocode from "react-geocode";
 import GMap from '../../components/GMap'
 import * as React from 'react';
 
-import { Inputs } from '../../src/types'
+import { Inputs, InfoBox } from '../../src/types'
 
 interface IGeolocation {
     lat: number,
     lng: number
 }
 
-const dbInstance = collection(database, 'baba-gift-wraps');
 Geocode.setApiKey("AIzaSyB44B4NFC_nSRBMq8YcRtHX7xFgT5RnHWg");
-
 
 export default function Giftwrap() {
     const [geoLocation, setGeoLocation] = React.useState<IGeolocation[]>([{ lat: 41.88, lng: -87.63 }]);
     let [point, setPoints] = React.useState(1)
-    const [giftwrapID, setGiftwrapID] = React.useState("")
-
+    const [infoBoxData, setInfoBoxData] = React.useState<InfoBox>({ city: "", state: "" })
     const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
 
     // Updates Geolocation with coodinates
     const GetCoordinates = async () => {
-        console.log('COODINATE: ')
         //This colleection is static will need to up dynamic in production
         const giftWrapCol = createCollection<Inputs>('gcornejo441')
         const giftWrapDocs = await getDocs(giftWrapCol)
         giftWrapDocs.docs.forEach((giftWrapDoc) => {
             const giftwrap = giftWrapDoc.data()
-
             // Updates GeoLocation State
+            
+            setInfoBoxData({ city: giftwrap.city, state: giftwrap.state })
             setGeoLocation((value) => [...value, { lat: giftwrap.coordinates.lat, lng: giftwrap.coordinates.lng }])
         })
     }
@@ -56,7 +53,7 @@ export default function Giftwrap() {
                 lat: lat,
                 lng: lng
             }
-        }, { merge: false })
+        })
     }
 
     const insert = async ({ ...data }: Inputs) => {
@@ -70,8 +67,6 @@ export default function Giftwrap() {
                 console.error(error);
             }
         );
-
-        console.log("Data submitted to db.", data)
     }
 
     const onSubmit: SubmitHandler<Inputs> = data => {
@@ -120,6 +115,7 @@ export default function Giftwrap() {
                 </div>
                 <GMap
                     geoLocation={geoLocation}
+                    infoBoxData={infoBoxData}
                 />
             </div>
         </div>

@@ -7,7 +7,6 @@ const EnterGiftWrap = () => {
     const [giftwrap, setGiftwrap] = React.useState("")
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-
         if (event.currentTarget.id == "yesBTN" && chgBtn == false) {
             if (chgBtn) {
                 setChgBtn(false)
@@ -25,16 +24,16 @@ const EnterGiftWrap = () => {
     }
 
     const onChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        switch(e.currentTarget.name) {
+        switch (e.currentTarget.name) {
             case "giftwrap_id":
                 setGiftwrap(e.currentTarget.value)
-              break;
+                break;
             case "zipcode":
                 setZipcode(e.currentTarget.value)
-              break;
+                break;
             default:
                 return
-          }
+        }
     }
 
     const PostData = async () => {
@@ -47,7 +46,7 @@ const EnterGiftWrap = () => {
             headers: {
                 'Content-Type': 'application/json'
             }
-        }) 
+        })
     }
 
     /**
@@ -87,7 +86,7 @@ const EnterGiftWrap = () => {
                             </Link>
                         </div>
                         <div className="flex flex-col text-center mx-auto">
-                                <button onClick={submitData} className='border-2 border-blue-400 bg-blue-200 px-2  my-3 w-fit'>Submit {" >^^< "}</button>
+                            <button onClick={submitData} className='border-2 border-blue-400 bg-blue-200 px-2  my-3 w-fit'>Submit {" >^^< "}</button>
                         </div>
                     </>
                 ) : (

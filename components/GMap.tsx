@@ -4,15 +4,12 @@ import { MAP_SETTINGS } from '@/gmapDefaults';
 // We will use these things from the lib
 import {
     GoogleMap,
-    InfoWindow,
-    Polyline,
+    InfoWindowF,
     useLoadScript,
     PolylineF,
     MarkerF
 } from "@react-google-maps/api";
 
-
-const googM = `${process.env.GOOGLEAPI}`
 
 const containerStyle = {
     height: "70vh",
@@ -20,10 +17,15 @@ const containerStyle = {
 };
 
 
+const divStyle = {
+    background: `white`,
+    padding: 15
+}
+
 const GMap = ({ ...props }) => {
     const [center, setCenter] = React.useState(props.geoLocation[0])
     const [zoom, setZoom] = React.useState(5);
-    
+
     const { isLoaded } = useLoadScript({
         id: 'google-map-script',
         googleMapsApiKey: "AIzaSyB44B4NFC_nSRBMq8YcRtHX7xFgT5RnHWg"
@@ -43,20 +45,21 @@ const GMap = ({ ...props }) => {
 
     const options = {
         strokeColor: '#FF0000',
-        strokeOpacity: 0.8,
-        strokeWeight: 2,
+        strokeOpacity: 1,
+        strokeWeight: 5,
         fillColor: '#FF0000',
         fillOpacity: 0.35,
+        geodesic: true,
         clickable: false,
         draggable: false,
         editable: false,
         visible: true,
-        radius: 30000,
-        paths: [{center}],
+        radius: 50000,
+        paths: [{ center }],
         zIndex: 1
     };
 
-    console.log("...props.geoLocation, ", ...props.geoLocation)
+    console.log(props.infoBoxData)
 
     const giftwrapCoordinates = [
         ...props.geoLocation
@@ -78,16 +81,33 @@ const GMap = ({ ...props }) => {
             onUnmount={onUnmount}
         >
             <>
-            <MarkerF
+                <MarkerF
                     position={MAP_SETTINGS.DEFAULT_CENTER}
-            onRightClick={onMarkerRightClick}
-            icon={image}
-            />
-                <PolylineF
-                path={giftwrapCoordinates}
-                options={options}
+                    onRightClick={onMarkerRightClick}
+                    icon={image}
                 />
-                
+                {giftwrapCoordinates.map((item, index) => {
+                    return (
+                        <>
+                            {index == 0 ?
+                                (<>
+                                </>) : (
+                                    <InfoWindowF
+                                        position={{ lat: item.lat, lng: item.lng }}
+                                    >
+                                        <div style={divStyle}>
+                                            <h1>{`${props.infoBoxData.city}` + ", " + `${props.infoBoxData.state}`}</h1>
+                                        </div>
+                                    </InfoWindowF>
+                                )}
+                        </>
+                    )
+                })}
+                <PolylineF
+                    path={giftwrapCoordinates}
+                    options={options}
+                />
+
             </>
         </GoogleMap>
     ) : <></>

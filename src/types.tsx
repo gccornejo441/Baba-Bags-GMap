@@ -13,3 +13,9 @@ export type Inputs = {
         lng: number
     }
 };
+
+
+export type InfoBox = {
+    city: string,
+    state: string
+}
