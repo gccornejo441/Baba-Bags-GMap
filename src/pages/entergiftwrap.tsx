@@ -72,7 +72,7 @@ const EnterGiftWrap = () => {
 
     // Sets form data into Firestore
     const handleSubmit = async () => {
-        const res = await fetch('/api/giftwrap/', {
+        const res = await fetch('/api/giftwrap', {
             method: 'POST',
             body: JSON.stringify({
                 zipcode,
