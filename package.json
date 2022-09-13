@@ -28,6 +28,7 @@
     "@firebase/firestore": "3.4.14",
     "@googlemaps/react-wrapper": "1.1.35",
     "@googlemaps/typescript-guards": "2.0.1",
+    "@material-tailwind/react": "1.2.4",
     "@react-google-maps/api": "2.12.1",
     "@types/googlemaps": "3.43.3",
     "fast-equals": "4.0.1",

@@ -8,10 +8,6 @@ import { useForm, SubmitHandler } from "react-hook-form";
 
 const EnterGiftWrap = () => {
     let [chgBtn, setChgBtn] = React.useState(true)
-    const [zipcode, setZipcode] = React.useState("")
-    const [giftwrap, setGiftwrap] = React.useState("")
-    const [memo, setMemo] = React.useState("")
-    let [point, setPoints] = React.useState(1)
     const [nextPanel, setNextPanel] = React.useState(false)
 
     const {
@@ -80,28 +76,27 @@ const EnterGiftWrap = () => {
 
     // Sets form data into Firestore
     const onSubmit: SubmitHandler<Inputs> = (data) => {
-        console.log(JSON.stringify(data))
-        
-        // fetch('/api/giftwrap', {
-        //     method: 'POST',
-        //     body: JSON.stringify({
-        //         zipcode,
-        //         giftwrap,
-        //         memo,
-        //         point
-        //     }),
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     }
-        // }).then((res) => {
-        //     if (res.ok) router.push({
-        //         pathname: "/giftwrap/[id]/",
-        //         query: { id: giftwrap }
-        //     })
-        // })
+        const { zipcode,
+            giftwrap_id,
+            memo } = data
+
+        fetch('/api/giftwrap', {
+            method: 'POST',
+            body: JSON.stringify({
+                zipcode,
+                giftwrap_id,
+                memo
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((res) => {
+            if (res.ok) router.push({
+                pathname: "/giftwrap/[id]/",
+                query: { id: giftwrap_id }
+            })
+        })
     }
-
-
 
     const changePanel = () => {
         { nextPanel ? setNextPanel(false) : setNextPanel(true) }
@@ -112,15 +107,30 @@ const EnterGiftWrap = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
                 {!nextPanel ? (
                     <div className="flex flex-col p-12 border-2 border-black">
-                        <div className="flex flex-col text-center">
-                            <label htmlFor="giftwrap_id">Please enter the gift wrap serial number</label>
-                            <input
-                                maxLength={15}
-                                type="text"
-                                defaultValue={intialValues.giftwrap_id}
-                                {...register("giftwrap_id")}
-                            />
-                        </div>
+                        {chgBtn ? (
+                            <div className="flex flex-col text-center">
+                                <label htmlFor="giftwrap_id">Please enter the gift wrap serial number</label>
+                                <input
+                                    maxLength={15}
+                                    type="text"
+                                    defaultValue={intialValues.giftwrap_id}
+                                    {...register("giftwrap_id", {
+                                        validate: {
+                                            noLessThanthree: (value) => value.length > 3
+                                        }
+                                    })}
+                                />
+                                {errors.giftwrap_id && errors.giftwrap_id.type === "noLessThanthree" && (
+                                    <p
+                                        className="text-red-500"
+                                    >
+                                        Serial number should be __ long.
+                                    </p>
+                                )}
+                            </div>
+                        ) : (
+                            <></>
+                        )}
                         <div className="flex flex-col text-center">
                             <label>I have this gift wrap now:</label>
                             <div>
@@ -143,7 +153,11 @@ const EnterGiftWrap = () => {
                                         })}
                                     />
                                     {errors.zipcode && errors.zipcode.type === "fiveLng" && (
-                                        <p>You're zipcode should be 5 digits long</p>
+                                        <p
+                                            className="text-red-500"
+                                        >
+                                            You're zipcode should be 5 digits long
+                                        </p>
                                     )}
                                 </div>
 

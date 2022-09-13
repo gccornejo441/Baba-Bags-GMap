@@ -7,6 +7,8 @@ import GMap from '../../../../components/GMap'
 import * as React from 'react';
 import { withRouter, useRouter } from 'next/router'
 import { Inputs, InfoBox } from '@/types'
+import Link from "next/link";
+import { Button } from "@material-tailwind/react";
 
 interface IGeolocation {
     lat: number,
@@ -55,10 +57,13 @@ function Giftwrap({ router }) {
     return (
         <div>
             <div className="py-12 bg-white text-black">
-                <GMap
+                <Link href="/">
+                <Button variant="gradient">Back Home</Button>
+                </Link>
+                {/* <GMap
                     geoLocation={geoLocation}
                     infoBoxData={infoBoxData}
-                />
+                /> */}
             </div>
         </div>
     );

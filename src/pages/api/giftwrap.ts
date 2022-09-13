@@ -8,16 +8,15 @@ export default async function userHandler(req: NextApiRequest, res: NextApiRespo
  let point = req.body.point
 
  const { giftwrap, zipcode, memo } = req.body
-    console.log("giftwrap 2, ", req.body)
 
     try {
-        // point++;
+        point++;
 
         // const giftWrapCol = createCollection<Inputs>(giftwrap)
         // const giftWrapDocs = doc(giftWrapCol, `giftwrap_${point}`)
         
         // await setDoc(giftWrapDocs, {
-            //     giftwrap_id: giftwrap,
+        //         giftwrap_id: giftwrap,
         //     zipcode: zipcode,
         //     memo: memo,
         //     coordinates: {
@@ -26,9 +25,7 @@ export default async function userHandler(req: NextApiRequest, res: NextApiRespo
         //     }
         // })
 
-        console.log("giftwrap 2, ", giftwrap)
-
-        res.status(201).redirect(307, "/")
+        res.status(201).json({ giftwrap, zipcode, memo})
         
     } catch (err) {
         res.status(500).send({error: "failed fetch"})
