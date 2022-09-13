@@ -8,8 +8,7 @@ export default async function userHandler(req: NextApiRequest, res: NextApiRespo
  let point = req.body.point
 
  const { giftwrap, zipcode, memo } = req.body
-
- console.log("giftwrap 1, ", req.body)
+    console.log("giftwrap 2, ", req.body)
 
     try {
         // point++;
@@ -28,9 +27,9 @@ export default async function userHandler(req: NextApiRequest, res: NextApiRespo
         // })
 
         console.log("giftwrap 2, ", giftwrap)
-        
-        // res.status(201).redirect(`/giftwraps/${giftwrap}`)
 
+        res.status(201).redirect(307, "/")
+        
     } catch (err) {
         res.status(500).send({error: "failed fetch"})
     }

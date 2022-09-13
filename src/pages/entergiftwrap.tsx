@@ -3,6 +3,8 @@ import * as React from 'react';
 import { getDocs, setDoc, doc } from 'firebase/firestore';
 import { createCollection } from 'firebaseConfig';
 import { Inputs } from '@/types';
+import { useRouter } from 'next/router'
+import { useForm, SubmitHandler } from "react-hook-form";
 
 const EnterGiftWrap = () => {
     let [chgBtn, setChgBtn] = React.useState(true)
@@ -11,6 +13,25 @@ const EnterGiftWrap = () => {
     const [memo, setMemo] = React.useState("")
     let [point, setPoints] = React.useState(1)
     const [nextPanel, setNextPanel] = React.useState(false)
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors }
+    } = useForm<Inputs>();
+
+
+    const intialValues = {
+        giftwrap_id: "",
+        zipcode: "",
+        memo: "Leave a nice note...",
+        coordinates: {
+            lat: 0,
+            lng: 0
+        }
+    };
+
+    const router = useRouter()
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
@@ -31,33 +52,20 @@ const EnterGiftWrap = () => {
 
     }
 
-    const onChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        switch (e.currentTarget.name) {
-            case "giftwrap_id":
-                setGiftwrap(e.currentTarget.value)
-                break;
-            case "zipcode":
-                setZipcode(e.currentTarget.value)
-                break;
-            case "memo":
-                setMemo(e.currentTarget.value)
-            default:
-                return
-        }
-    }
-
-    const PostData = async () => {
-        const res = await fetch('/api/zipcodes', {
-            method: 'POST',
-            body: JSON.stringify({
-                zipcode,
-                giftwrap
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-    }
+    // const onChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    //     switch (e.currentTarget.name) {
+    //         case "giftwrap_id":
+    //             setGiftwrap(e.currentTarget.value)
+    //             break;
+    //         case "zipcode":
+    //             setZipcode(e.currentTarget.value)
+    //             break;
+    //         case "memo":
+    //             setMemo(e.currentTarget.value)
+    //         default:
+    //             return
+    //     }
+    // }
 
     /**
      * Retrieves input data from a form and returns it as a JSON object.
@@ -66,25 +74,34 @@ const EnterGiftWrap = () => {
      */
     const submitData = () => {
         console.log("SUBMIT!!")
-        PostData()
+
     }
 
 
     // Sets form data into Firestore
-    const handleSubmit = async () => {
-        const res = await fetch('/api/giftwrap', {
-            method: 'POST',
-            body: JSON.stringify({
-                zipcode,
-                giftwrap,
-                memo,
-                point
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
+    const onSubmit: SubmitHandler<Inputs> = (data) => {
+        console.log(JSON.stringify(data))
+        
+        // fetch('/api/giftwrap', {
+        //     method: 'POST',
+        //     body: JSON.stringify({
+        //         zipcode,
+        //         giftwrap,
+        //         memo,
+        //         point
+        //     }),
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     }
+        // }).then((res) => {
+        //     if (res.ok) router.push({
+        //         pathname: "/giftwrap/[id]/",
+        //         query: { id: giftwrap }
+        //     })
+        // })
     }
+
+
 
     const changePanel = () => {
         { nextPanel ? setNextPanel(false) : setNextPanel(true) }
@@ -92,12 +109,17 @@ const EnterGiftWrap = () => {
 
     return (
         <div className="flex justify-center mt-10">
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit(onSubmit)}>
                 {!nextPanel ? (
                     <div className="flex flex-col p-12 border-2 border-black">
                         <div className="flex flex-col text-center">
-                            <label>Please enter the gift wrap serial number</label>
-                            <input onChange={onChange} name="giftwrap_id" type="text" maxLength={15} value={giftwrap} />
+                            <label htmlFor="giftwrap_id">Please enter the gift wrap serial number</label>
+                            <input
+                                maxLength={15}
+                                type="text"
+                                defaultValue={intialValues.giftwrap_id}
+                                {...register("giftwrap_id")}
+                            />
                         </div>
                         <div className="flex flex-col text-center">
                             <label>I have this gift wrap now:</label>
@@ -109,9 +131,23 @@ const EnterGiftWrap = () => {
                         {chgBtn ? (
                             <>
                                 <div className="flex flex-col text-center">
-                                    <label>My current Zip Code is:</label>
-                                    <input onChange={onChange} value={zipcode} name="zipcode" type="text" maxLength={5} />
+                                    <label htmlFor="zipcode">My current Zip Code is:</label>
+                                    <input
+                                        defaultValue={intialValues.zipcode}
+                                        type="text"
+                                        maxLength={5}
+                                        {...register("zipcode", {
+                                            validate: {
+                                                fiveLng: (value) => value.length === 5
+                                            }
+                                        })}
+                                    />
+                                    {errors.zipcode && errors.zipcode.type === "fiveLng" && (
+                                        <p>You're zipcode should be 5 digits long</p>
+                                    )}
                                 </div>
+
+
                                 <div className="flex flex-col text-center mx-auto">
                                     <button className='border-2 border-green-400 bg-green-200 px-2 my-3 w-fit' onClick={changePanel}>Continue {" >> "}</button>
                                 </div>
@@ -129,8 +165,13 @@ const EnterGiftWrap = () => {
                 ) : (
                     <div className="flex flex-col p-12 border-2 border-black">
                         <div className="flex flex-col text-center">
-                            <label>Leave A Short Message For The Recipient:</label>
-                            <input onChange={onChange} name="memo" value={memo} type="text" maxLength={60} />
+                            <label htmlFor="memo">Leave A Short Message For The Recipient:</label>
+                            <input
+                                maxLength={60}
+                                type="text"
+                                defaultValue={intialValues.memo}
+                                {...register("memo")}
+                            />
                         </div>
                         <div className="flex flex-col text-center mx-auto">
                             <button className='border-2 border-red-400 bg-red-200 px-2  my-3 w-fit' onClick={changePanel}>Back {" << "}</button>
