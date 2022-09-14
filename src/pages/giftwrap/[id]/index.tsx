@@ -21,61 +21,28 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 function Giftwrap() {
     const [geoLocation, setGeoLocation] = React.useState<IGeolocation[]>([{ lat: 41.88, lng: -87.63 }]);
-    const [infoBoxData, setInfoBoxData] = React.useState<InfoBox>({ city: "", state: "" })
-    const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
-
+    const [infoBoxData, setInfoBoxData] = React.useState<InfoBox>({ zipcode: "" })
     const router = useRouter()
-
-    console.log("dddddddddddddddddd: ", router.query)
 
     const { data, error } = useSWR(
         router.query.id ? `/api/giftwrap/${router.query.id}` : null,
         fetcher
-      )
-
-    console.log("data: ", data)
+    )
 
     if (error) return <div>Failed to load</div>
     if (!data) return <div>Loading...</div>
 
 
-    // Sets form data into Firestore
-    // const onSubmit: SubmitHandler<Inputs> = (data) => {
-    //     const { zipcode,
-    //         giftwrap_id,
-    //         memo } = data
+    const { giftwrap_id, zipcode, memo, coordinates } = data.mapData
 
-    //     fetch('/api/giftwrap', {
-    //         method: 'GET',
-    //         body: JSON.stringify({
-    //             zipcode,
-    //             giftwrap_id,
-    //             memo
-    //         }),
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //         }
-    //     }).then((res) => {
-    //         if (res.ok) router.push({
-    //             pathname: "/giftwrap/[id]/",
-    //             query: { id: giftwrap_id }
-    //         })
-    //     })
-    // }
 
-    // Updates Geolocation with coodinates
-    const GetCoordinates = async () => {
-        //This colleection is static will need to up dynamic in production
-        const giftWrapCol = createCollection<Inputs>('gcornejo441')
-        const giftWrapDocs = await getDocs(giftWrapCol)
-        giftWrapDocs.docs.forEach((giftWrapDoc) => {
-            const giftwrap = giftWrapDoc.data()
-            // Updates GeoLocation State
+    React.useEffect(() => {
+        if (data) {
+            setGeoLocation((value) => [...value, { lat: coordinates.lat, lng: coordinates.lng }])
+            setInfoBoxData({ zipcode: zipcode })
+        }
+    }, [])
 
-            setInfoBoxData({ city: giftwrap.city, state: giftwrap.state })
-            setGeoLocation((value) => [...value, { lat: giftwrap.coordinates.lat, lng: giftwrap.coordinates.lng }])
-        })
-    }
 
     return (
         <div>
@@ -83,11 +50,10 @@ function Giftwrap() {
                 <Link href="/">
                     <Button variant="gradient">Back Home</Button>
                 </Link>
-                 <div>YOUR GIFTWRAP ID IS: {data.name}</div>
-                {/* <GMap
+                <GMap
                     geoLocation={geoLocation}
                     infoBoxData={infoBoxData}
-                /> */}
+                />
             </div>
         </div>
     );

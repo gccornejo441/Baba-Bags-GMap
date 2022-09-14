@@ -9,6 +9,7 @@ import {
     PolylineF,
     MarkerF
 } from "@react-google-maps/api";
+import { IGeolocation, InfoBox } from '@/types';
 
 
 const containerStyle = {
@@ -25,6 +26,8 @@ const divStyle = {
 const GMap = ({ ...props }) => {
     const [center, setCenter] = React.useState(props.geoLocation[0])
     const [zoom, setZoom] = React.useState(5);
+    const [geoLocation, setGeoLocation] = React.useState<IGeolocation[]>([{ lat: 41.88, lng: -87.63 }]);
+    const [infoBoxData, setInfoBoxData] = React.useState<InfoBox>({ zipcode: "" })
 
     const { isLoaded } = useLoadScript({
         id: 'google-map-script',
@@ -58,6 +61,7 @@ const GMap = ({ ...props }) => {
         paths: [{ center }],
         zIndex: 1
     };
+
 
     const giftwrapCoordinates = [
         ...props.geoLocation
@@ -94,7 +98,7 @@ const GMap = ({ ...props }) => {
                                         position={{ lat: item.lat, lng: item.lng }}
                                     >
                                         <div style={divStyle}>
-                                            <h1>{`${props.infoBoxData.city}` + ", " + `${props.infoBoxData.state}`}</h1>
+                                            <h1>{`${props.infoBoxData.zipcode}`}</h1>
                                         </div>
                                     </InfoWindowF>
                                 )}

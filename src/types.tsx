@@ -15,6 +15,10 @@ export type Inputs = {
 
 
 export type InfoBox = {
-    city: string,
-    state: string
+    zipcode: string
+}
+
+export type IGeolocation =  {
+    lat: number,
+    lng: number
 }
