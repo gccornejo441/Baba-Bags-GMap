@@ -25,6 +25,3 @@ export const createCollection = <T = DocumentData>(collectionName: string) => {
   return collection(database, collectionName) as CollectionReference<T>
 }
 
-
-// export all your collections
-export const coordinatesCol = createCollection<Coordinate>('coordinate')

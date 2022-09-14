@@ -27,54 +27,46 @@ export default async function userHandler(req: NextApiRequest, res: NextApiRespo
     const giftWrapDocs = doc(giftWrapCol, `giftwrap_${point}`)
     const getGiftWrapDocs = await getDocs(giftWrapCol)
 
-    /**
+
+ 
+    switch (req.method) {
+        case "GET":
+
+            break;
+        case "POST":
+            /**
 * POST document to Firestore.
 * @param  {HTMLFormControlsCollection} elements  the form elements
 */
-    const sendToDoc = async ({ giftwrap_id, zipcode, memo, coordinates }: Inputs) => {
-        await setDoc(giftWrapDocs, {
-            giftwrap_id: giftwrap_id,
-            zipcode: zipcode,
-            memo: memo,
-            coordinates: {
-                lat: coordinates.lat,
-                lng: coordinates.lng
+            const sendToDoc = async ({ giftwrap_id, zipcode, memo, coordinates }: Inputs) => {
+                await setDoc(giftWrapDocs, {
+                    giftwrap_id: giftwrap_id,
+                    zipcode: zipcode,
+                    memo: memo,
+                    coordinates: {
+                        lat: coordinates.lat,
+                        lng: coordinates.lng
+                    }
+                })
             }
-        })
-    }
 
-    /**
- * Get latitude & longitude from address.
- * @param  {HTMLFormControlsCollection} elements  the form elements
- */
-    const insertGeo = async ({ giftwrap_id, zipcode, memo, coordinates }: Inputs) => {
-        Geocode.fromAddress(zipcode).then(
-            (response) => {
-                const { lat, lng } = response.results[0].geometry.location;
-                coordinates.lat = lat, coordinates.lng = lng
-                sendToDoc({ giftwrap_id, zipcode, memo, coordinates })
-            }, (error) => {
-                console.error(error);
+            /**
+         * Get latitude & longitude from address.
+         * @param  {HTMLFormControlsCollection} elements  the form elements
+         */
+            const insertGeo = async ({ giftwrap_id, zipcode, memo, coordinates }: Inputs) => {
+                Geocode.fromAddress(zipcode).then(
+                    (response) => {
+                        const { lat, lng } = response.results[0].geometry.location;
+                        coordinates.lat = lat, coordinates.lng = lng
+                        sendToDoc({ giftwrap_id, zipcode, memo, coordinates })
+                    }, (error) => {
+                        console.error(error);
+                    }
+                );
             }
-        );
-    }
 
-    // Updates Geolocation with coodinates
-    const getMapData = async () => {
-        getGiftWrapDocs.docs.forEach((giftWrapDoc) => {
-            const giftwrap = giftWrapDoc.data()
-            const { giftwrap_id, zipcode, memo, coordinates } = giftwrap
 
-            // setInfoBoxData({ giftwrap_id, zipcode, memo, coordinates })
-            // setGeoLocation((value) => [...value, { lat: giftwrap.coordinates.lat, lng: giftwrap.coordinates.lng }])
-        })
-    }
-
-    switch (req.method) {
-        case "GET":
-            getMapData()
-            break;
-        case "POST":
             try {
                 // await insertGeo({ giftwrap_id, zipcode, memo, coordinates })
                 res.status(201).json({ giftwrap_id, zipcode, memo, coordinates })

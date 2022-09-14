@@ -11,26 +11,32 @@ import Link from "next/link";
 import { Button } from "@material-tailwind/react";
 import useSWR from 'swr'
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 interface IGeolocation {
     lat: number,
     lng: number
 }
 
+const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 function Giftwrap() {
     const [geoLocation, setGeoLocation] = React.useState<IGeolocation[]>([{ lat: 41.88, lng: -87.63 }]);
     const [infoBoxData, setInfoBoxData] = React.useState<InfoBox>({ city: "", state: "" })
     const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
+
     const router = useRouter()
 
     console.log("dddddddddddddddddd: ", router.query)
 
-    const { data, error } = useSWR(`/api/giftwrap/${router.query}`, fetcher)
+    const { data, error } = useSWR(
+        router.query.id ? `/api/giftwrap/${router.query.id}` : null,
+        fetcher
+      )
+
+    console.log("data: ", data)
+
     if (error) return <div>Failed to load</div>
     if (!data) return <div>Loading...</div>
-    if (data) return <div>{data.giftwrap_id}</div>
 
 
     // Sets form data into Firestore
@@ -75,9 +81,9 @@ function Giftwrap() {
         <div>
             <div className="py-12 bg-white text-black">
                 <Link href="/">
-                <Button variant="gradient">Back Home</Button>
+                    <Button variant="gradient">Back Home</Button>
                 </Link>
-                d
+                 <div>YOUR GIFTWRAP ID IS: {data.name}</div>
                 {/* <GMap
                     geoLocation={geoLocation}
                     infoBoxData={infoBoxData}
