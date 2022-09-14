@@ -1,7 +1,4 @@
-import Link from 'next/link';
 import * as React from 'react';
-import { getDocs, setDoc, doc } from 'firebase/firestore';
-import { createCollection } from 'firebaseConfig';
 import { Inputs } from '@/types';
 import { useRouter } from 'next/router'
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -9,13 +6,13 @@ import { useForm, SubmitHandler } from "react-hook-form";
 const EnterGiftWrap = () => {
     let [chgBtn, setChgBtn] = React.useState(true)
     const [nextPanel, setNextPanel] = React.useState(false)
+    const router = useRouter()
 
     const {
         register,
         handleSubmit,
         formState: { errors }
     } = useForm<Inputs>();
-
 
     const intialValues = {
         giftwrap_id: "",
@@ -27,11 +24,8 @@ const EnterGiftWrap = () => {
         }
     };
 
-    const router = useRouter()
-
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
-
         if (event.currentTarget.id == "yesBTN" && chgBtn == false) {
             if (chgBtn) {
                 setChgBtn(false)
@@ -45,34 +39,7 @@ const EnterGiftWrap = () => {
                 setChgBtn(true)
             }
         }
-
     }
-
-    // const onChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    //     switch (e.currentTarget.name) {
-    //         case "giftwrap_id":
-    //             setGiftwrap(e.currentTarget.value)
-    //             break;
-    //         case "zipcode":
-    //             setZipcode(e.currentTarget.value)
-    //             break;
-    //         case "memo":
-    //             setMemo(e.currentTarget.value)
-    //         default:
-    //             return
-    //     }
-    // }
-
-    /**
-     * Retrieves input data from a form and returns it as a JSON object.
-     * @param  {HTMLFormControlsCollection} elements  the form elements
-     * @return {Object}                               form data as an object literal
-     */
-    const submitData = () => {
-        console.log("SUBMIT!!")
-
-    }
-
 
     // Sets form data into Firestore
     const onSubmit: SubmitHandler<Inputs> = (data) => {
@@ -80,7 +47,7 @@ const EnterGiftWrap = () => {
             giftwrap_id,
             memo } = data
 
-        fetch('/api/giftwrap', {
+        fetch('/api/giftwrap/', {
             method: 'POST',
             body: JSON.stringify({
                 zipcode,
@@ -160,8 +127,6 @@ const EnterGiftWrap = () => {
                                         </p>
                                     )}
                                 </div>
-
-
                                 <div className="flex flex-col text-center mx-auto">
                                     <button className='border-2 border-green-400 bg-green-200 px-2 my-3 w-fit' onClick={changePanel}>Continue {" >> "}</button>
                                 </div>
