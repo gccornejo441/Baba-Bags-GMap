@@ -29,20 +29,20 @@ function Giftwrap() {
         fetcher
     )
 
+    // React.useEffect(() => {
+    //     if (data.mapData) {
+    //         const { giftwrap_id, zipcode, memo, coordinates } = data.mapData
+    
+    //         setGeoLocation((value) => [...value, { lat: coordinates.lat, lng: coordinates.lng }])
+    //         setInfoBoxData({ zipcode: zipcode })
+    //     }
+
+    // }, [])
+
     if (error) return <div>Failed to load</div>
     if (!data) return <div>Loading...</div>
 
-
-    const { giftwrap_id, zipcode, memo, coordinates } = data.mapData
-
-
-    React.useEffect(() => {
-        if (data) {
-            setGeoLocation((value) => [...value, { lat: coordinates.lat, lng: coordinates.lng }])
-            setInfoBoxData({ zipcode: zipcode })
-        }
-    }, [])
-
+    console.log("data: ", data)
 
     return (
         <div>
@@ -51,8 +51,7 @@ function Giftwrap() {
                     <Button variant="gradient">Back Home</Button>
                 </Link>
                 <GMap
-                    geoLocation={geoLocation}
-                    infoBoxData={infoBoxData}
+                    mapData={data.mapData}
                 />
             </div>
         </div>

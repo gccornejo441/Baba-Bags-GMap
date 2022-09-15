@@ -9,7 +9,7 @@ import {
     PolylineF,
     MarkerF
 } from "@react-google-maps/api";
-import { IGeolocation, InfoBox } from '@/types';
+import { IGeolocation, InfoBox, Inputs } from '@/types';
 
 
 const containerStyle = {
@@ -24,10 +24,10 @@ const divStyle = {
 }
 
 const GMap = ({ ...props }) => {
-    const [center, setCenter] = React.useState(props.geoLocation[0])
     const [zoom, setZoom] = React.useState(5);
     const [geoLocation, setGeoLocation] = React.useState<IGeolocation[]>([{ lat: 41.88, lng: -87.63 }]);
     const [infoBoxData, setInfoBoxData] = React.useState<InfoBox>({ zipcode: "" })
+    const [ mapProps, setMapProps ] = React.useState<Inputs[]>(props.mapData)
 
     const { isLoaded } = useLoadScript({
         id: 'google-map-script',
@@ -58,13 +58,22 @@ const GMap = ({ ...props }) => {
         editable: false,
         visible: true,
         radius: 50000,
-        paths: [{ center }],
+        paths: [{ geoLocation }],
         zIndex: 1
     };
 
+    // console.log("mapProps ", mapProps)
+
+      React.useEffect(() => {
+          mapProps.forEach((item, index) => {
+              setGeoLocation((value) => [...value, { lat: item.coordinates.lat, lng: item.coordinates.lng }])
+              setInfoBoxData({ zipcode: item.zipcode })
+          })
+    }, [])
+
 
     const giftwrapCoordinates = [
-        ...props.geoLocation
+        ...geoLocation
     ];
 
     // This will handle the right click events on the initial marker.
@@ -72,23 +81,23 @@ const GMap = ({ ...props }) => {
         alert("This is the initialization point for Baba Gift Bag: `S4D56F4SD`")
     }
 
-    const image = "bbStick.png";
-
     return isLoaded ? (
-        <GoogleMap
-            zoom={zoom}
-            mapContainerStyle={containerStyle}
-            center={MAP_SETTINGS.DEFAULT_CENTER}
-            onLoad={onLoad}
-            onUnmount={onUnmount}
-        >
-            <>
-                <MarkerF
-                    position={MAP_SETTINGS.DEFAULT_CENTER}
-                    onRightClick={onMarkerRightClick}
-                    icon={image}
-                />
-                {giftwrapCoordinates.map((item, index) => {
+        <> 
+            <GoogleMap
+                zoom={zoom}
+                mapContainerStyle={containerStyle}
+                center={MAP_SETTINGS.DEFAULT_CENTER}
+                onLoad={onLoad}
+                onUnmount={onUnmount}
+            >
+                <>
+
+                    <MarkerF
+                        position={MAP_SETTINGS.DEFAULT_CENTER}
+                        onRightClick={onMarkerRightClick}
+                    // icon={MAP_SETTINGS.IMAGE}
+                    />
+                    {/* {giftwrapCoordinates.map((item, index) => {
                     return (
                         <>
                             {index == 0 ?
@@ -98,20 +107,21 @@ const GMap = ({ ...props }) => {
                                         position={{ lat: item.lat, lng: item.lng }}
                                     >
                                         <div style={divStyle}>
-                                            <h1>{`${props.infoBoxData.zipcode}`}</h1>
+                                            <h1>{`${infoBoxData.zipcode}`}</h1>
                                         </div>
                                     </InfoWindowF>
                                 )}
                         </>
                     )
-                })}
-                <PolylineF
-                    path={giftwrapCoordinates}
-                    options={options}
-                />
+                })} */}
+                    <PolylineF
+                        path={giftwrapCoordinates}
+                        options={options}
+                    />
 
+                </>
+            </GoogleMap>
             </>
-        </GoogleMap>
     ) : <></>
 }
 

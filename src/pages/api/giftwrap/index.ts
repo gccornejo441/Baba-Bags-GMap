@@ -24,8 +24,7 @@ export default async function userHandler(req: NextApiRequest, res: NextApiRespo
     const giftWrapCol = createCollection<Inputs>(giftwrap_id)
 
     // Get Giftwrap documents from Firestore
-    const giftWrapDocs = doc(giftWrapCol, `giftwrap_${point}`)
-
+    const giftWrapDocs = doc(giftWrapCol)
 
     if (req.method === 'POST') {
 
@@ -42,7 +41,6 @@ export default async function userHandler(req: NextApiRequest, res: NextApiRespo
             })
         }
 
-
         // Get latitude & longitude from address.
         const insertGeo = async ({ giftwrap_id, zipcode, memo, coordinates }: Inputs) => {
             Geocode.fromAddress(zipcode).then(
@@ -55,7 +53,6 @@ export default async function userHandler(req: NextApiRequest, res: NextApiRespo
                 }
             );
         }
-
 
         try {
             await insertGeo({ giftwrap_id, zipcode, memo, coordinates })

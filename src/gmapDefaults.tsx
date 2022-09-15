@@ -15,4 +15,8 @@ export const MAP_SETTINGS = {
         X: 0,
         Y: 20,
     },
+    IMAGE: {
+        image: "bbStick.png"
+    }
+
 }
