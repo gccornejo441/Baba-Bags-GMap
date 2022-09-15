@@ -33,7 +33,7 @@ export default function Home() {
               className="mb-4 grid h-28 place-items-center">
               <Typography variant="p" color="white">I want to enter and track my own Baba Gift Wrap.</Typography>
             </CardHeader>
-            <Link href="/">
+            <Link href="/getmap">
               <Button color="amber" ripple={true} size="lg">Click Me</Button>
             </Link>
           </Card>

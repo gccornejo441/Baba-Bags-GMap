@@ -19,15 +19,11 @@ interface IGeolocation {
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
-function Giftwrap() {
+function GiftwrapEntries() {
     const [geoLocation, setGeoLocation] = React.useState<IGeolocation[]>([{ lat: 41.88, lng: -87.63 }]);
     const [infoBoxData, setInfoBoxData] = React.useState<InfoBox>({ zipcode: "" })
     const router = useRouter()
 
-    const { data, error } = useSWR(
-        router.query.id ? `/api/giftwrap/${router.query.id}` : null,
-        fetcher
-    )
 
     // React.useEffect(() => {
     //     if (data.mapData) {
@@ -39,8 +35,7 @@ function Giftwrap() {
 
     // }, [])
 
-    if (error) return <div>Failed to load</div>
-    if (!data) return <div>Loading...</div>
+console.log("rounter qurie entires ", router.query)
 
     return (
         <div>
@@ -48,12 +43,12 @@ function Giftwrap() {
                 <Link href="/">
                     <Button variant="gradient">Back Home</Button>
                 </Link>
-                <GMap
+                {/* <GMap
                     mapData={data.mapData}
-                />
+                /> */}
             </div>
         </div>
     );
 }
 
-export default Giftwrap;
+export default GiftwrapEntries;
