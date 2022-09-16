@@ -20,11 +20,14 @@ export default async function userHandler(req: NextApiRequest, res: NextApiRespo
         lng: 0
     }
 
+    const dateApi = Date.now()
+
+
     // Giftwrap Collection from Firestore
     const giftWrapCol = createCollection<Inputs>(giftwrap_id)
 
     // Get Giftwrap documents from Firestore
-    const giftWrapDocs = doc(giftWrapCol)
+    const giftWrapDocs = doc(giftWrapCol, `${dateApi}`)
 
     if (req.method === 'POST') {
 

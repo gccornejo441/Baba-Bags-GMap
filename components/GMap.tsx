@@ -127,10 +127,10 @@ const GMap = ({ ...props }) => {
                             </>
                         )
                     })}
-                    {/* <PolylineF
+                    <PolylineF
                         path={giftwrapCoordinates}
                         options={options}
-                    /> */}
+                    />
 
                 </>
             </GoogleMap>
