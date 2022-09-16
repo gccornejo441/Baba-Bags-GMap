@@ -2,8 +2,8 @@ import * as React from 'react';
 import { Inputs } from '@/types';
 import { useRouter } from 'next/router'
 import { useForm, SubmitHandler } from "react-hook-form";
-import useSWR from 'swr'
-
+import Link from 'next/link';
+import { Button } from '@material-tailwind/react';
 
 const GetMap = () => {
     const {
@@ -37,7 +37,11 @@ const GetMap = () => {
 
 
     return (
-        <div className="flex justify-center mt-10">
+        <>
+          <Link href="/">
+                <Button variant="gradient">Back Home</Button>
+            </Link>
+            <div className="flex justify-center mt-10">
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="flex flex-col text-center">
                     <label htmlFor="giftwrap_id">Please enter the gift wrap serial number</label>
@@ -64,6 +68,7 @@ const GetMap = () => {
                 </div>
             </form>
         </div>
+        </>
     )
 }
 

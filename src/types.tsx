@@ -18,7 +18,7 @@ export type InfoBox = {
     zipcode: string
 }
 
-export type IGeolocation =  {
+export type Geolocation =  {
     lat: number,
     lng: number
 }

@@ -1,5 +1,5 @@
 import { Inputs } from '@/types'
-import { doc, setDoc, getDocs } from '@firebase/firestore'
+import { doc, setDoc } from '@firebase/firestore'
 import { createCollection } from 'firebaseConfig'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import Geocode from "react-geocode";
